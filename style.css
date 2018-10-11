@@ -1,0 +1,9 @@
+#canvasWrapper {
+  border: solid 1px black;
+  background-color: #ccf;
+}
+
+#canvas {
+  width: 100%;
+  height: 6.5in;
+}
