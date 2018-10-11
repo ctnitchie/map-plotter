@@ -2,7 +2,7 @@ import {relativeCoordinates} from './utils';
 import draw from './draw';
 
 export default class Plot {
-  constructor() {
+  constructor(canvas) {
     this.points = [];
     this.lines = [];
     this.style = {
@@ -13,6 +13,7 @@ export default class Plot {
       points: 'white',
       pointLabels: 'white'
     };
+    this.canvas = canvas;
   }
 
   getBounds() {
@@ -87,7 +88,7 @@ export default class Plot {
     return newP;
   }
 
-  draw(canvas) {
+  draw(canvas = this.canvas) {
     draw(this, canvas);
   }
 }

@@ -59,8 +59,8 @@ function adjusted() {
   return plot;
 }
 
-function adjusted2() {
-  const plot = new Plot();
+function adjusted2(canvas) {
+  const plot = new Plot(canvas);
   const baseLine = 250;
   const eastLine = 115;
   const westLine = 30;
@@ -92,13 +92,10 @@ function adjusted2() {
   return plot;
 }
 
-function go() {
-  adjusted2().draw(document.getElementById('canvas'));
-}
-
-document.addEventListener('DOMContentLoaded', go, false);
-window.addEventListener('resize', go, false);
-
 window.addEventListener('DOMContentLoaded', function() {
-  routeEditor(document.getElementById('editor'));
+  const canvas = document.getElementById('canvas');
+  const plot = adjusted2(canvas);
+  plot.draw();
+  routeEditor(plot, document.getElementById('editor'));
+  window.addEventListener('resize', () => plot.draw(), false);
 });
