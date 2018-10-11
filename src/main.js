@@ -1,4 +1,5 @@
 import Plot from './Plot';
+import routeEditor from './routeEditor';
 
 function original() {
   const plot = new Plot();
@@ -97,3 +98,7 @@ function go() {
 
 document.addEventListener('DOMContentLoaded', go, false);
 window.addEventListener('resize', go, false);
+
+window.addEventListener('DOMContentLoaded', function() {
+  routeEditor(document.getElementById('editor'));
+});

@@ -4,14 +4,18 @@ module.exports = {
   module: {
     rules: [{
       include: [path.resolve(__dirname, 'src')],
+      test: /\.jsx?$/,
       loader: 'babel-loader',
       options: {
-        plugins: ['@babel/plugin-syntax-dynamic-import', '@babel/plugin-proposal-object-rest-spread'],
-        presets: [['@babel/preset-env', {
-          'modules': false
-        }]]
-      },
-      test: /\.js$/
+        plugins: [
+          '@babel/plugin-syntax-dynamic-import',
+          '@babel/plugin-proposal-object-rest-spread'
+        ],
+        presets: [
+          ['@babel/preset-env', {modules: false}],
+          ['@babel/preset-react']
+        ]
+      }
     }]
   },
 
