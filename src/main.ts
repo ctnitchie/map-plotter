@@ -1,5 +1,5 @@
 import Plot from './Plot';
-import routeEditor from './routeEditor';
+import routeEditor from './routeEditor/index';
 
 window.addEventListener('DOMContentLoaded', function() {
 

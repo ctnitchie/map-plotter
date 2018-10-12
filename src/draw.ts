@@ -98,6 +98,7 @@ export default function draw(plot: Plot, canvas: HTMLCanvasElement) {
   
   const cxt = canvas.getContext('2d');
   cxt.clearRect(0, 0, canvas.width, canvas.height);
+  canvas.parentElement.style.backgroundColor = plot.style.background;
   
   lines.filter(l => l.draw).map(adjust.line).forEach(l => {
     cxt.beginPath();

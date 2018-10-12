@@ -30,6 +30,7 @@ export interface StyleOptions {
   pointFont: string;
   points: string;
   pointLabels: string;
+  background: string;
 }
 
 export interface Bounds {
@@ -59,15 +60,16 @@ function relativeCoordinates(deg: number, distance: number): Point {
 
 export default class Plot {
   points: Point[] = [];
-  lines: InstalledLine[];
+  lines: InstalledLine[] = [];
   originName: string = 'Origin';
   style: StyleOptions = {
-    lineFont: '12pt Sans Serif',
+    lineFont: '8pt sans-serif',
     lines: 'gray',
     lineLabels: 'red',
-    pointFont: '14pt Sans Serif',
+    pointFont: '10pt sans-serif',
     points: 'black',
-    pointLabels: 'black'
+    pointLabels: 'black',
+    background: '#adf'
   };
   canvas: HTMLCanvasElement;
 
@@ -130,6 +132,7 @@ export default class Plot {
       from = this.findPointOrThrow(from);
     }
     const l: InstalledLine = {
+      ...{draw: true},
       ...opts,
       p1: from,
       p2: to,

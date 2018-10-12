@@ -1,25 +1,34 @@
 const path = require('path')
 
+const babelOpts = {
+  plugins: [
+    '@babel/plugin-syntax-dynamic-import',
+    '@babel/plugin-proposal-object-rest-spread'
+  ],
+  presets: [
+    ['@babel/preset-env', {modules: false}],
+    ['@babel/preset-react']
+  ]
+};
+
 module.exports = {
   module: {
     rules: [{
       include: [path.resolve(__dirname, 'src')],
       test: /\.jsx?$/,
-      loader: 'babel-loader',
-      options: {
-        plugins: [
-          '@babel/plugin-syntax-dynamic-import',
-          '@babel/plugin-proposal-object-rest-spread'
-        ],
-        presets: [
-          ['@babel/preset-env', {modules: false}],
-          ['@babel/preset-react']
-        ]
-      }
+      use: [{
+        loader: 'babel-loader',
+        options: babelOpts
+      }]
     },
     {
       test: /\.tsx?$/,
-      use: 'ts-loader',
+      use: [{
+        loader: 'babel-loader',
+        options: babelOpts
+      }, {
+        loader: 'ts-loader'
+      }],
       exclude: /node_modules/
     }]
   },
@@ -28,7 +37,7 @@ module.exports = {
     extensions: ['.js', '.jsx', '.ts', '.tsx']
   },
 
-  entry: './src/main.js',
+  entry: './src/main.ts',
 
   output: {
     filename: '[name].js',
