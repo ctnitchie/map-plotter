@@ -11,7 +11,7 @@ window.addEventListener('DOMContentLoaded', function() {
     const eastLine = 110;
     const westLine = 35;
 
-    const platform = plot.addPoint({x: 0, y: 0, label: 'East Platform'});
+    const platform = plot.startPoint;
     const brynne = plot.addLineFrom(platform, baseLine, 134, 'HMCS Brynne');
     const dino = plot.addLineFrom(brynne, 0, 85, 'Scubasaurus');
     const buddha = plot.addLineFrom(dino, 330, 51, 'Buddha');
@@ -40,7 +40,7 @@ window.addEventListener('DOMContentLoaded', function() {
     const eastLine = 117;
     const westLine = 31;
 
-    const platform = plot.addPoint({x: 0, y: 0, label: 'East Platform'});
+    const platform = plot.startPoint;
     const brynne = plot.addLineFrom(platform, baseLine, 134, 'HMCS Brynne');
     const dino = plot.addLineFrom(brynne, 0, 85, 'Scubasaurus');
     const buddha = plot.addLineFrom(dino, 330, 51, 'Buddha');
@@ -69,7 +69,7 @@ window.addEventListener('DOMContentLoaded', function() {
     const eastLine = 115;
     const westLine = 30;
 
-    const platform = plot.addPoint({x: 0, y: 0, label: 'East Platform'});
+    const platform = plot.startPoint;
     const brynne = plot.addLineFrom(platform, baseLine, 134, 'HMCS Brynne');
     const dino = plot.addLineFrom(brynne, 355, 85, 'Scubasaurus');
     const buddha = plot.addLineFrom(dino, 330, 51, 'Buddha');

@@ -1,4 +1,4 @@
-import Plot, {Point, Bounds, InstalledLine} from './Plot';
+import Plot, {Point, Route, Bounds} from './Plot';
 
 function getDistance(p1: Point, p2: Point): number {
   const b = p2.x - p1.x;
@@ -20,25 +20,28 @@ class Frame {
     this.w = w;
     this.h = h;
   }
-  widthRatio() {
+  get widthRatio() {
     return this.w / this.h;
   }
-  isWide() {
-    return this.widthRatio() > 1;
+  get isWide() {
+    return this.widthRatio > 1;
   }
-  isTall() {
-    return this.widthRatio() < 1;
+  get isTall() {
+    return this.widthRatio < 1;
   }
 }
 
-interface AdjustedLine extends InstalledLine {
-  length: number,
-  halfPoint: Point
+interface Line {
+  p1: Point;
+  p2: Point;
+  label: string;
+  length: number;
+  halfPoint: Point;
 }
 
 interface Adjustor {
   point: (p: Point) => Point;
-  line: (l: InstalledLine) => AdjustedLine;
+  line: (r: Route) => Line;
 }
 
 // Initiate the canvas and set up a function for point adjustment
@@ -51,7 +54,7 @@ function setupCanvas(canvas: HTMLCanvasElement, bounds: Bounds): Adjustor {
   canvas.width = cvs.w;
   canvas.height = cvs.h;
 
-  const isWider = img.widthRatio() > cvs.widthRatio();
+  const isWider = img.widthRatio > cvs.widthRatio;
   const multiplier = isWider ? cvs.w / img.w : cvs.h / img.h;
 
   const adjustX = (x: number) => ((x - bounds.bottomLeft.x) + wPadding[0]) * multiplier;
@@ -63,13 +66,14 @@ function setupCanvas(canvas: HTMLCanvasElement, bounds: Bounds): Adjustor {
       y: adjustY(p.y)
     };
   };
-  const adjustLine = (l: InstalledLine) => {
-    return {
-      ...l,
-      p1: adjustPoint(l.p1),
-      p2: adjustPoint(l.p2),
-      length: Math.round(getDistance(l.p1, l.p2)),
-      halfPoint: adjustPoint(getMidpoint(l.p1, l.p2))
+  const adjustLine = (r: Route) => {
+    const {startsAt, endsAt} = r;
+    return <Line> {
+      p1: adjustPoint(startsAt),
+      p2: adjustPoint(endsAt),
+      length: Math.round(getDistance(startsAt, endsAt)),
+      halfPoint: adjustPoint(getMidpoint(startsAt, endsAt)),
+      label: r.opts.label ? r.opts.label + '' : null
     }
   };
   return {
@@ -92,15 +96,13 @@ function dot(plot: Plot, cxt: CanvasRenderingContext2D, p: Point) {
 }
 
 export default function draw(plot: Plot, canvas: HTMLCanvasElement) {
-  const {points, lines} = plot;
-  const bounds = plot.getBounds();
-  const adjust = setupCanvas(canvas, bounds);
+  const adjust = setupCanvas(canvas, plot.bounds);
   
   const cxt = canvas.getContext('2d');
   cxt.clearRect(0, 0, canvas.width, canvas.height);
   canvas.parentElement.style.backgroundColor = plot.style.background;
   
-  lines.filter(l => l.draw).map(adjust.line).forEach(l => {
+  plot.routes.filter(r => r.opts.draw).map(adjust.line).forEach(l => {
     cxt.beginPath();
     cxt.moveTo(l.p1.x, l.p1.y);
     cxt.lineTo(l.p2.x, l.p2.y);
@@ -109,9 +111,9 @@ export default function draw(plot: Plot, canvas: HTMLCanvasElement) {
     if (l.label) {
       cxt.fillStyle = plot.style.lineLabels;
       cxt.font = plot.style.lineFont;
-      cxt.fillText(l.label, l.halfPoint.x - 17, l.halfPoint.y);
+      cxt.fillText(l.label + '', l.halfPoint.x - 17, l.halfPoint.y);
     }
   });
 
-  points.map(adjust.point).forEach(p => dot(plot, cxt, p));
+  plot.points.map(adjust.point).forEach(p => dot(plot, cxt, p));
 }

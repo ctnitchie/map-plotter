@@ -1,11 +1,5 @@
 import draw from './draw';
 
-export interface Line {
-  fromPoint: Point;
-  heading: number;
-  label?: string;
-}
-
 export interface Point {
   x: number;
   y: number;
@@ -15,12 +9,6 @@ export interface Point {
 export interface LineOpts {
   label?: string | boolean,
   draw?: boolean
-}
-
-export interface InstalledLine extends LineOpts {
-  p1: Point;
-  p2: Point;
-  label?: string;
 }
 
 export interface StyleOptions {
@@ -42,26 +30,43 @@ export interface Bounds {
   height: number;
 }
 
-function toRads(deg: number): number {
-  let r = 90 - deg;
-  while (r < 0) {
-    r += 360;
-  }
-  return r * Math.PI / 180;
+export interface Route {
+  readonly startsAt: Point;
+  readonly endsAt: Point;
+  readonly endLabel: string;
+  readonly opts: LineOpts;
 }
 
-function relativeCoordinates(deg: number, distance: number): Point {
-  const rads = toRads(deg);
-  return {
-    x: Math.cos(rads) * distance,
-    y: Math.sin(rads) * distance
-  };
+export class HeadingRoute implements Route {
+  constructor(
+    public startsAt: Point,
+    private heading: number,
+    private distance: number,
+    public endLabel: string = null,
+    public opts: LineOpts = {}
+  ) {}
+
+  get endsAt(): Point {
+    let orientedHeading = 90 - this.heading;
+    while (orientedHeading < 0) {
+      orientedHeading += 360;
+    }
+    const rads = orientedHeading * Math.PI / 180;
+    return {
+      x: this.startsAt.x + (Math.cos(rads) * this.distance),
+      y: this.startsAt.y + (Math.sin(rads) * this.distance),
+      label: this.endLabel
+    };
+  }
 }
 
 export default class Plot {
-  points: Point[] = [];
-  lines: InstalledLine[] = [];
-  originName: string = 'Origin';
+  private _routes: Route[] = [];
+  startPoint: Point = {
+    x: 0,
+    y: 0,
+    label: 'Origin'
+  };
   style: StyleOptions = {
     lineFont: '8pt sans-serif',
     lines: 'gray',
@@ -77,12 +82,21 @@ export default class Plot {
     this.canvas = canvas;
   }
 
-  getBounds(): Bounds {
+  get routes(): Route[] {
+    return [...this._routes];
+  }
+
+  get points(): Point[] {
+    return [this.startPoint].concat(this._routes.map(r => r.endsAt));
+  }
+
+  get bounds(): Bounds {
     let minX = 0;
     let maxX = 10;
     let minY = 0;
     let maxY = 10;
-    this.points.forEach(p => {
+    this._routes.forEach(r => {
+      const p = r.endsAt;
       minX = Math.min(p.x, minX);
       minY = Math.min(p.y, minY);
       maxX = Math.max(p.x, maxX);
@@ -110,13 +124,12 @@ export default class Plot {
     };
   }
 
-  addPoint(p: Point): Point {
-    this.points.push(p);
-    return p;
-  }
-
   findPoint(name: string): Point {
-    return this.points.find(p => p.label === name);
+    if (name === this.startPoint.label) {
+      return this.startPoint;
+    }
+    const r = this._routes.find(r => r.endLabel === name);
+    return r ? r.endsAt : null;
   }
 
   findPointOrThrow(name: string): Point {
@@ -127,38 +140,36 @@ export default class Plot {
     return p;
   }
 
-  addLineBetween(from: Point | string, to: Point, opts: LineOpts = {}): InstalledLine {
+  addLineBetween(from: Point | string, to: Point | string, opts: LineOpts = {}): Route {
+    opts = {...{draw: true}, ...opts};
     if (typeof from === 'string') {
       from = this.findPointOrThrow(from);
     }
-    const l: InstalledLine = {
-      ...{draw: true},
-      ...opts,
-      p1: from,
-      p2: to,
-      label: typeof opts.label === 'string' ? opts.label : null
+    if (typeof to === 'string') {
+      to = this.findPointOrThrow(to);
+    }
+    const route: Route = {
+      startsAt: from,
+      endsAt: to,
+      endLabel: to.label,
+      opts
     };
-    this.lines.push(l);
-    return l;
+    this._routes.push(route);
+    return route;
   }
 
-  addLineFrom(from: Point | string, deg: number, distance: number, label: string = undefined, opts: LineOpts = {}) {
-    opts = {...{label: true}, ...opts};
+  addLineFrom(from: Point | string, deg: number, distance: number, label: string = undefined, opts: LineOpts = {}): Point {
+    opts = {...{draw: true, label: `${distance}' ${deg}°`}, ...opts};
     if (typeof from === 'string') {
       from = this.findPointOrThrow(from);
     }
-    const rel = relativeCoordinates(deg, distance);
-    const newP = {
-      x: from.x + rel.x,
-      y: from.y + rel.y,
-      label
-    };
-    this.points.push(newP);
-    this.addLineBetween(from, newP, {
-      ...opts,
-      label: typeof opts.label !== 'string' ? `${distance}' ${deg}°` : null
-    });
-    return newP;
+    const route = new HeadingRoute(from, deg, distance, label, opts);
+    this._routes.push(route);
+    return route.endsAt;
+  }
+
+  addRoute(route: Route) {
+    this._routes.push(route);
   }
 
   draw(canvas = this.canvas) {
