@@ -16,7 +16,16 @@ module.exports = {
           ['@babel/preset-react']
         ]
       }
+    },
+    {
+      test: /\.tsx?$/,
+      use: 'ts-loader',
+      exclude: /node_modules/
     }]
+  },
+
+  resolve: {
+    extensions: ['.js', '.jsx', '.ts', '.tsx']
   },
 
   entry: './src/main.js',

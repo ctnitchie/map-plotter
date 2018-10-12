@@ -1,22 +1,61 @@
 import {relativeCoordinates} from './utils';
 import draw from './draw';
 
+export interface Line {
+  fromPoint: Point;
+  heading: number;
+  label?: string;
+}
+
+export interface Point {
+  x: number;
+  y: number;
+  label?: string;
+}
+
+export interface InstalledLine {
+  p1: Point;
+  p2: Point;
+}
+
+export interface StyleOptions {
+  lineFont: string;
+  lines: string;
+  lineLabels: string;
+  pointFont: string;
+  points: string;
+  pointLabels: string;
+}
+
+export interface Bounds {
+  bottomLeft: Point;
+  bottomRight: Point;
+  topLeft: Point;
+  topRight: Point;
+  width: number;
+  height: number;
+}
+
 export default class Plot {
-  constructor(canvas) {
-    this.points = [];
-    this.lines = [];
-    this.style = {
-      lineFont: '12px sans-serif',
-      lines: '#999',
-      lineLabels: 'red',
-      pointFont: '16px sans-serif',
-      points: 'white',
-      pointLabels: 'white'
-    };
+  private points: Point[] = [];
+  private pointsByLabel: {[label: string]: Point} = {};
+  private lines: InstalledLine[];
+  originName: string = 'Origin';
+  style: StyleOptions = {
+    lineFont: '12pt Sans Serif',
+    lines: 'gray',
+    lineLabels: 'red',
+    pointFont: '14pt Sans Serif',
+    points: 'black',
+    pointLabels: 'black'
+  };
+  canvas: Element;
+
+  constructor(canvas: Element) {
     this.canvas = canvas;
   }
 
-  getBounds() {
+  getBounds(): Bounds {
     let minX = 0;
     let maxX = 10;
     let minY = 0;
@@ -49,23 +88,12 @@ export default class Plot {
     };
   }
 
-  addPoint(p) {
+  addPoint(p: Point): Point {
     this.points.push(p);
     return p;
   }
 
-  addLine(p1, p2, opts = {}) {
-    const line = {
-      ...{draw: true},
-      ...opts,
-      p1,
-      p2
-    };
-    this.lines.push(line);
-    return line;
-  }
-
-  addLineFrom(from, deg, distance, label, opts = {}) {
+  addLineFrom(from: Point | string, deg: number, distance: number, label: string, opts = {}) {
     opts = {...{label: true}, ...opts};
     if (typeof from === 'string') {
       const pfrom = this.points.find(p => p.label === from);
