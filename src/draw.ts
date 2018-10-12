@@ -111,7 +111,7 @@ export default function draw(plot: Plot, canvas: HTMLCanvasElement) {
     if (l.label) {
       cxt.fillStyle = plot.style.lineLabels;
       cxt.font = plot.style.lineFont;
-      cxt.fillText(l.label + '', l.halfPoint.x - 17, l.halfPoint.y);
+      cxt.fillText(l.label + '', l.halfPoint.x - 17, l.halfPoint.y + 4);
     }
   });
 
