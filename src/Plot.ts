@@ -41,7 +41,7 @@ export interface Bounds {
   height: number;
 }
 
-export function toRads(deg: number): number {
+function toRads(deg: number): number {
   let r = 90 - deg;
   while (r < 0) {
     r += 360;
@@ -49,7 +49,7 @@ export function toRads(deg: number): number {
   return r * Math.PI / 180;
 }
 
-export function relativeCoordinates(deg: number, distance: number): Point {
+function relativeCoordinates(deg: number, distance: number): Point {
   const rads = toRads(deg);
   return {
     x: Math.cos(rads) * distance,
