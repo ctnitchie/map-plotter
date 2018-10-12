@@ -3,10 +3,8 @@ import routeEditor from './routeEditor/index';
 
 window.addEventListener('DOMContentLoaded', function() {
 
-  const canvas: HTMLCanvasElement = <HTMLCanvasElement> document.getElementById('canvas');
-
   function original() {
-    const plot = new Plot(canvas);
+    const plot = new Plot();
     const baseLine = 250;
     const eastLine = 110;
     const westLine = 35;
@@ -35,7 +33,7 @@ window.addEventListener('DOMContentLoaded', function() {
   }
 
   function adjusted() {
-    const plot = new Plot(canvas);
+    const plot = new Plot();
     const baseLine = 250;
     const eastLine = 117;
     const westLine = 31;
@@ -64,7 +62,7 @@ window.addEventListener('DOMContentLoaded', function() {
   }
 
   function adjusted2() {
-    const plot = new Plot(canvas);
+    const plot = new Plot();
     const baseLine = 250;
     const eastLine = 115;
     const westLine = 30;
@@ -96,8 +94,9 @@ window.addEventListener('DOMContentLoaded', function() {
     return plot;
   }
 
+  const canvas: HTMLCanvasElement = <HTMLCanvasElement> document.getElementById('canvas');
   const plot = adjusted2();
-  plot.draw();
+  plot.draw(canvas);
   routeEditor(plot, document.getElementById('editor'));
-  window.addEventListener('resize', () => plot.draw(), false);
+  window.addEventListener('resize', () => plot.draw(canvas), false);
 });

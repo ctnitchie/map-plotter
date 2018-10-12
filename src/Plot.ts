@@ -30,29 +30,33 @@ export interface Bounds {
   height: number;
 }
 
-export interface Route {
+export interface PlotLine {
   readonly startsAt: Point;
   readonly endsAt: Point;
-  readonly endLabel: string;
   readonly opts: LineOpts;
 }
 
-export class HeadingRoute implements Route {
+export class Route implements PlotLine {
+  public endsAt: Point;
+
   constructor(
     public startsAt: Point,
-    private heading: number,
-    private distance: number,
+    public heading: number,
+    public distance: number,
     public endLabel: string = null,
     public opts: LineOpts = {}
-  ) {}
+  ) {
+    this.opts = {...{label: true, draw: true}, ...opts};
+    if (this.opts.label === true) {
+      this.opts.label = `${distance}' ${heading}°`;
+    }
 
-  get endsAt(): Point {
     let orientedHeading = 90 - this.heading;
     while (orientedHeading < 0) {
       orientedHeading += 360;
     }
     const rads = orientedHeading * Math.PI / 180;
-    return {
+    this.endsAt = {
       x: this.startsAt.x + (Math.cos(rads) * this.distance),
       y: this.startsAt.y + (Math.sin(rads) * this.distance),
       label: this.endLabel
@@ -61,7 +65,8 @@ export class HeadingRoute implements Route {
 }
 
 export default class Plot {
-  private _routes: Route[] = [];
+  public readonly routes: Route[] = [];
+  public readonly connectors: PlotLine[] = [];
   startPoint: Point = {
     x: 0,
     y: 0,
@@ -76,18 +81,13 @@ export default class Plot {
     pointLabels: 'black',
     background: '#adf'
   };
-  canvas: HTMLCanvasElement;
-
-  constructor(canvas: HTMLCanvasElement) {
-    this.canvas = canvas;
-  }
-
-  get routes(): Route[] {
-    return [...this._routes];
-  }
 
   get points(): Point[] {
-    return [this.startPoint].concat(this._routes.map(r => r.endsAt));
+    return [this.startPoint].concat(this.routes.map(r => r.endsAt));
+  }
+
+  get lines(): PlotLine[] {
+    return [...this.routes, ...this.connectors];
   }
 
   get bounds(): Bounds {
@@ -95,7 +95,7 @@ export default class Plot {
     let maxX = 10;
     let minY = 0;
     let maxY = 10;
-    this._routes.forEach(r => {
+    this.routes.forEach(r => {
       const p = r.endsAt;
       minX = Math.min(p.x, minX);
       minY = Math.min(p.y, minY);
@@ -128,7 +128,7 @@ export default class Plot {
     if (name === this.startPoint.label) {
       return this.startPoint;
     }
-    const r = this._routes.find(r => r.endLabel === name);
+    const r = this.routes.find(r => r.endLabel === name);
     return r ? r.endsAt : null;
   }
 
@@ -140,7 +140,7 @@ export default class Plot {
     return p;
   }
 
-  addLineBetween(from: Point | string, to: Point | string, opts: LineOpts = {}): Route {
+  addLineBetween(from: Point | string, to: Point | string, opts: LineOpts = {}): PlotLine {
     opts = {...{draw: true}, ...opts};
     if (typeof from === 'string') {
       from = this.findPointOrThrow(from);
@@ -148,13 +148,12 @@ export default class Plot {
     if (typeof to === 'string') {
       to = this.findPointOrThrow(to);
     }
-    const route: Route = {
+    const route: PlotLine = {
       startsAt: from,
       endsAt: to,
-      endLabel: to.label,
       opts
     };
-    this._routes.push(route);
+    this.connectors.push(route);
     return route;
   }
 
@@ -163,16 +162,16 @@ export default class Plot {
     if (typeof from === 'string') {
       from = this.findPointOrThrow(from);
     }
-    const route = new HeadingRoute(from, deg, distance, label, opts);
-    this._routes.push(route);
+    const route = new Route(from, deg, distance, label, opts);
+    this.routes.push(route);
     return route.endsAt;
   }
 
   addRoute(route: Route) {
-    this._routes.push(route);
+    this.routes.push(route);
   }
 
-  draw(canvas = this.canvas) {
+  draw(canvas: HTMLCanvasElement) {
     draw(this, canvas);
   }
 }

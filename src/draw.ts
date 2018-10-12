@@ -1,4 +1,4 @@
-import Plot, {Point, Route, Bounds} from './Plot';
+import Plot, {Point, Bounds, PlotLine} from './Plot';
 
 function getDistance(p1: Point, p2: Point): number {
   const b = p2.x - p1.x;
@@ -31,7 +31,7 @@ class Frame {
   }
 }
 
-interface Line {
+interface AdjustedLine {
   p1: Point;
   p2: Point;
   label: string;
@@ -41,7 +41,7 @@ interface Line {
 
 interface Adjustor {
   point: (p: Point) => Point;
-  line: (r: Route) => Line;
+  line: (r: PlotLine) => AdjustedLine;
 }
 
 // Initiate the canvas and set up a function for point adjustment
@@ -66,14 +66,14 @@ function setupCanvas(canvas: HTMLCanvasElement, bounds: Bounds): Adjustor {
       y: adjustY(p.y)
     };
   };
-  const adjustLine = (r: Route) => {
-    const {startsAt, endsAt} = r;
-    return <Line> {
+  const adjustLine = (l: PlotLine) => {
+    const {startsAt, endsAt} = l;
+    return <AdjustedLine> {
       p1: adjustPoint(startsAt),
       p2: adjustPoint(endsAt),
       length: Math.round(getDistance(startsAt, endsAt)),
       halfPoint: adjustPoint(getMidpoint(startsAt, endsAt)),
-      label: r.opts.label ? r.opts.label + '' : null
+      label: l.opts.label ? l.opts.label + '' : null
     }
   };
   return {
@@ -102,7 +102,7 @@ export default function draw(plot: Plot, canvas: HTMLCanvasElement) {
   cxt.clearRect(0, 0, canvas.width, canvas.height);
   canvas.parentElement.style.backgroundColor = plot.style.background;
   
-  plot.routes.filter(r => r.opts.draw).map(adjust.line).forEach(l => {
+  plot.lines.filter(l => l.opts.draw).map(adjust.line).forEach(l => {
     cxt.beginPath();
     cxt.moveTo(l.p1.x, l.p1.y);
     cxt.lineTo(l.p2.x, l.p2.y);
