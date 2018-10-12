@@ -1,32 +1,43 @@
-import {getHeading, getDistance, getMidpoint} from './utils';
+import {getDistance, getMidpoint} from './utils';
+
+import Plot, * as plot from './Plot';
+
+class Frame {
+  w: number;
+  h: number;
+  constructor(w: number, h: number) {
+    this.w = w;
+    this.h = h;
+  }
+  widthRatio() {
+    return this.w / this.h;
+  }
+  isWide() {
+    return this.widthRatio() > 1;
+  }
+  isTall() {
+    return this.widthRatio() < 1;
+  }
+}
+
+type Adjustor = (p: plot.Point) => plot.Point;
 
 // Initiate the canvas and set up a function for point adjustment
-function setupCanvas(canvas, bounds) {
+function setupCanvas(canvas: HTMLCanvasElement, bounds: plot.Bounds): Adjustor {
   const wPadding = [5, 20];
   const hPadding = [5, 5];
-  const wpad = wPadding[0] + wPadding[1];
-  const hpad = hPadding[0] + hPadding[1];
-
-  const cvs = {
-    w: canvas.offsetWidth,
-    h: canvas.offsetHeight,
-    widthRatio: canvas.offsetWidth / canvas.offsetHeight
-  };
-  const img = {
-    w: bounds.width + wpad,
-    h: bounds.height + hpad,
-    widthRatio: (bounds.width + wpad) / (bounds.height + hpad)
-  };
+  const cvs = new Frame(canvas.offsetWidth, canvas.offsetHeight);
+  const img = new Frame(bounds.width + wPadding[0] + wPadding[1], bounds.height + hPadding[0] + hPadding[1]);
 
   canvas.width = cvs.w;
   canvas.height = cvs.h;
 
-  const isWide = img.widthRatio > cvs.widthRatio;
-  const multiplier = isWide ? cvs.w / img.w : cvs.h / img.h;
+  const isWider = img.widthRatio() > cvs.widthRatio();
+  const multiplier = isWider ? cvs.w / img.w : cvs.h / img.h;
 
-  const adjustX = x => ((x - bounds.bottomLeft.x) + wPadding[0]) * multiplier;
-  const adjustY = y => ((bounds.topRight.y - y) + hPadding[0]) * multiplier;
-  const adjust = p => {
+  const adjustX = (x: number) => ((x - bounds.bottomLeft.x) + wPadding[0]) * multiplier;
+  const adjustY = (y: number) => ((bounds.topRight.y - y) + hPadding[0]) * multiplier;
+  const adjust = (p: plot.Point) => {
     return {
       ...p,
       x: adjustX(p.x),
@@ -39,7 +50,7 @@ function setupCanvas(canvas, bounds) {
   return adjust;
 }
 
-function dot(plot, cxt, p) {
+function dot(plot: Plot, cxt: CanvasRenderingContext2D, p: plot.Point) {
   cxt.beginPath();
   cxt.arc(p.x, p.y, 3, 0, 2 * Math.PI);
   cxt.fillStyle = plot.style.points;
@@ -52,7 +63,7 @@ function dot(plot, cxt, p) {
   }
 }
 
-export default function draw(plot, canvas) {
+export default function draw(plot: Plot, canvas: HTMLCanvasElement) {
   const {points, lines} = plot;
   const bounds = plot.getBounds();
   const adjust = setupCanvas(canvas, bounds);

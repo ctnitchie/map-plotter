@@ -13,9 +13,15 @@ export interface Point {
   label?: string;
 }
 
-export interface InstalledLine {
+export interface LineOpts {
+  label?: string | boolean,
+  draw?: boolean
+}
+
+export interface InstalledLine extends LineOpts {
   p1: Point;
   p2: Point;
+  label?: string;
 }
 
 export interface StyleOptions {
@@ -37,9 +43,8 @@ export interface Bounds {
 }
 
 export default class Plot {
-  private points: Point[] = [];
-  private pointsByLabel: {[label: string]: Point} = {};
-  private lines: InstalledLine[];
+  points: Point[] = [];
+  lines: InstalledLine[];
   originName: string = 'Origin';
   style: StyleOptions = {
     lineFont: '12pt Sans Serif',
@@ -49,9 +54,9 @@ export default class Plot {
     points: 'black',
     pointLabels: 'black'
   };
-  canvas: Element;
+  canvas: HTMLCanvasElement;
 
-  constructor(canvas: Element) {
+  constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
   }
 
@@ -93,14 +98,36 @@ export default class Plot {
     return p;
   }
 
-  addLineFrom(from: Point | string, deg: number, distance: number, label: string, opts = {}) {
+  findPoint(name: string): Point {
+    return this.points.find(p => p.label === name);
+  }
+
+  findPointOrThrow(name: string): Point {
+    const p = this.findPoint(name);
+    if (!p) {
+      throw new Error(`No such point: ${name}`);
+    }
+    return p;
+  }
+
+  addLineBetween(from: Point | string, to: Point, opts: LineOpts = {}): InstalledLine {
+    if (typeof from === 'string') {
+      from = this.findPointOrThrow(from);
+    }
+    const l: InstalledLine = {
+      ...opts,
+      p1: from,
+      p2: to,
+      label: typeof opts.label === 'string' ? opts.label : null
+    };
+    this.lines.push(l);
+    return l;
+  }
+
+  addLineFrom(from: Point | string, deg: number, distance: number, label: string = undefined, opts: LineOpts = {}) {
     opts = {...{label: true}, ...opts};
     if (typeof from === 'string') {
-      const pfrom = this.points.find(p => p.label === from);
-      if (!pfrom) {
-        throw new Error(`No such point: ${from}`);
-      }
-      from = pfrom;
+      from = this.findPointOrThrow(from);
     }
     const rel = relativeCoordinates(deg, distance);
     const newP = {
@@ -109,9 +136,9 @@ export default class Plot {
       label
     };
     this.points.push(newP);
-    this.addLine(from, newP, {
+    this.addLineBetween(from, newP, {
       ...opts,
-      label: opts.label && typeof opts.label !== 'string' ? `${distance}' ${deg}°` : null
+      label: typeof opts.label !== 'string' ? `${distance}' ${deg}°` : null
     });
     return newP;
   }
