@@ -1,4 +1,3 @@
-import {relativeCoordinates} from './utils';
 import draw from './draw';
 
 export interface Line {
@@ -40,6 +39,22 @@ export interface Bounds {
   topRight: Point;
   width: number;
   height: number;
+}
+
+export function toRads(deg: number): number {
+  let r = 90 - deg;
+  while (r < 0) {
+    r += 360;
+  }
+  return r * Math.PI / 180;
+}
+
+export function relativeCoordinates(deg: number, distance: number): Point {
+  const rads = toRads(deg);
+  return {
+    x: Math.cos(rads) * distance,
+    y: Math.sin(rads) * distance
+  };
 }
 
 export default class Plot {
