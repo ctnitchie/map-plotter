@@ -24,21 +24,40 @@ export default function RouteEditor(props: RouteEditorProps) {
   return (
     <div className={`pointConfig card ${nonContiguous ? 'noncontiguous' : ''}`}>
       <div className="card-body">
-        <select onChange={e => onSourceChange(e)}
-            value={route.previousId || '--start--'}
-            className="col-5">
-          <option value="">Select...</option>
-          <option value="--start--">(Start)</option>
-          {props.routes.filter(r => !r.isDescendantOfOrSelf(route)).map(r => (
-            <option key={r.id} value={r.id}>
-              {r.endLabel || `(${Math.round(r.endPoint.x)}, ${Math.round(r.endPoint.y)})`}
-            </option>
-          ))}
-        </select>
-        <input type="text" className="col-5" placeholder="Label"
-            onChange={e => updateRoute(e, 'endLabel')} value={route.endLabel}/>
-        <input type="number" className="col-2" min="0" max="359"
-            onChange={e => updateRoute(e, 'heading', true)} value={route.heading}/>
+        <div className="row">
+          <b className="col-2 text-right">From:</b>
+          <div className="col-4">
+            <select onChange={e => onSourceChange(e)}
+                value={route.previousId || '--start--'}
+                style={{width: '100%'}}>
+              <option value="--start--">(Start)</option>
+              {props.routes.filter(r => !r.isDescendantOfOrSelf(route)).map(r => (
+                <option key={r.id} value={r.id}>
+                  {r.endLabel || `(${Math.round(r.endPoint.x)}, ${Math.round(r.endPoint.y)})`}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="col-6 d-flex">
+            <div className="flex-grow-1">
+              <input type="number" style={{width: '100%'}} min="0" max="359"
+                  onChange={e => updateRoute(e, 'heading', true)} value={route.heading}/>
+            </div>
+            <span>°</span>
+            <div className="flex-shrink-1">
+              <input type="number" style={{width: '100%'}} min="0"
+                  onChange={e => updateRoute(e, 'distance', true)} value={route.distance}/>
+            </div>
+            <span>'</span>
+          </div>
+        </div>
+        <div className="row">
+          <b className="col-2 text-right">To:</b>
+          <div className="col-10">
+            <input type="text" style={{width: '100%'}} placeholder="Label"
+                onChange={e => updateRoute(e, 'endLabel')} value={route.endLabel}/>
+          </div>
+        </div>
       </div>
     </div>
   );

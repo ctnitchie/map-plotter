@@ -33,7 +33,7 @@ export class RouteUI extends React.Component<RouteUIProps, UIState> {
 
   render() {
     return (
-      <div>
+      <div id="plotEditor">
         {this.state.routes.map((r, i) => (
           <RouteEditor key={i} index={i} routes={this.state.routes}
               onChange={r => this.onRouteChange(i, r)}/> 
