@@ -2,8 +2,7 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
 import RouteEditor from './RouteEditor';
-import Plot, { Route, Point, isSamePoint } from '../Plot';
-import { replace, replaceAt, updateMany } from './utils';
+import Plot, { Route } from '../Plot';
 
 export interface RouteUIProps {
   plot: Plot;
