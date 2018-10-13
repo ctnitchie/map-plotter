@@ -87,7 +87,7 @@ export class Route implements PlotLine {
   }
 
   get previous(): Route {
-    return this.previousId ? this.plot.routesById[this.previousId] : null;
+    return this.previousId ? this.plot.route(this.previousId) : null;
   }
 
   get startPoint(): Point {
@@ -132,11 +132,11 @@ export class RouteJoin implements PlotLine {
     if (!this.r1) {
       return this.plot.startPoint;
     }
-    return this.plot.routesById[this.r1].endPoint;
+    return this.plot.route(this.r1).endPoint;
   }
 
   get endPoint(): Point {
-    return this.plot.routesById[this.r2].endPoint;
+    return this.plot.route(this.r2).endPoint;
   }
 }
 
@@ -149,7 +149,7 @@ export function isSamePointLocation(p1: Point, p2: Point): boolean {
 }
 
 export class MapPlot {
-  readonly routesById: {[id: string]: Route} = {};
+  private readonly _routes: Route[] = [];
   readonly connectors: RouteJoin[] = [];
   startLabel: string = 'Origin';
   readonly style: StyleOptions = {
@@ -170,21 +170,29 @@ export class MapPlot {
     return {x: 0, y: 0, label: this.startLabel};
   }
 
+  route(id: RouteId): Route {
+    return this._routes.find(r => r.id === id);
+  }
+
   get routes(): Route[] {
-    return Object.keys(this.routesById).map(id => this.routesById[id]);
+    return [...this._routes];
   }
 
   updateRoute(r: Route): void {
-    this.routesById[r.id] = r;
+    const index = this._routes.findIndex(rt => rt.id === r.id);
+    if (index === -1) {
+      throw new Error(`No such route: ${r.id}`);
+    }
+    this._routes[index] = r;
   }
 
   get points(): Point[] {
-    const arr: Point[] = this.routes.map(r => r.endPoint);
+    const arr: Point[] = this._routes.map(r => r.endPoint);
     return [this.startPoint].concat(arr);
   }
 
   get lines(): PlotLine[] {
-    return [...this.routes, ...this.connectors];
+    return [...this._routes, ...this.connectors];
   }
 
   get bounds(): Bounds {
@@ -192,7 +200,7 @@ export class MapPlot {
     let maxX = 10;
     let minY = 0;
     let maxY = 10;
-    this.routes.forEach(r => {
+    this._routes.forEach(r => {
       const p = r.endPoint;
       minX = Math.min(p.x, minX);
       minY = Math.min(p.y, minY);
@@ -234,12 +242,23 @@ export class MapPlot {
     const prevId = previous ? previous.id : null;
     const route = new Route(this, prevId, heading,
         distance, endLabel, opts);
-    this.routesById[route.id] = route;
+    this._routes.push(route);
     return route;
   }
 
-  addRouteObject(route: Route) {
-    this.routes.push(route);
+  addRouteObject(route: Route, index: number = this._routes.length) {
+    this._routes.splice(index, 0, route);
+  }
+
+  addRouteObjectAfter(route: Route, after: Route | RouteId) {
+    if (after instanceof Route) {
+      after = after.id;
+    }
+    const index = this._routes.findIndex(r => r.id === after);
+    if (index === -1) {
+      throw new Error(`No such route: ${after}`);
+    }
+    this.addRouteObject(route, index + 1);
   }
 
   draw(canvas: HTMLCanvasElement) {
@@ -250,7 +269,9 @@ export class MapPlot {
     if (route instanceof Route) {
       route = route.id;
     }
-    delete this.routesById[route];
+    const index = this._routes.findIndex(r => r.id === route);
+    if (index === -1) return;
+    this._routes.splice(index, 1);
     for (let i = 0; i < this.connectors.length; i++) {
       const c = this.connectors[i];
       if (c.r1 === route || c.r2 === route) {

@@ -1,10 +1,12 @@
 import * as React from 'react';
-import { Route } from '../MapPlot';
+import { Route, MapPlot } from '../MapPlot';
+import { ChangeListener } from './MapEditor';
 
 export interface RouteEditorProps {
+  plot: MapPlot;
   routes: Route[];
   index: number;
-  onChange: (r: Route) => void;
+  listener: ChangeListener
 }
 
 export default function RouteEditor(props: RouteEditorProps) {
@@ -13,17 +15,25 @@ export default function RouteEditor(props: RouteEditorProps) {
 
   function onSourceChange(e: React.ChangeEvent<HTMLSelectElement>) {
     const newRoute = route.mutate({previousId: e.target.value});
-    props.onChange(newRoute);
+    props.listener.onChange(newRoute, props.index);
   }
 
   function updateRoute(e: React.ChangeEvent<HTMLInputElement>, prop: string, num: boolean = false) {
     const v = num ? parseInt(e.target.value) : e.target.value;
-    props.onChange(route.mutate({[prop]: v}));
+    props.listener.onChange(route.mutate({[prop]: v}), props.index);
   }
 
   function updateOpt(key: string, val: any): void {
     const opts = {...route.opts, ...{[key]: val}};
-    props.onChange(route.mutate({opts}));
+    props.listener.onChange(route.mutate({opts}), props.index);
+  }
+
+  function addRoute() {
+    props.listener.onAdd(new Route(props.plot, route.id, 0, 0, ''), props.index + 1);
+  }
+
+  function removeRoute() {
+    props.listener.onRemove(route, props.index);
   }
 
   return (
@@ -64,6 +74,10 @@ export default function RouteEditor(props: RouteEditorProps) {
             <input type="text" style={{width: '100%'}} placeholder="Label"
                 onChange={e => updateRoute(e, 'endLabel')} value={route.endLabel}/>
           </div>
+        </div>
+        <div className="text-right">
+          <button className="btn btn-sm btn-success" onClick={addRoute}>Add</button>
+          <button className="btn btn-sm btn-danger" onClick={removeRoute}>Delete</button>
         </div>
       </div>
     </div>
