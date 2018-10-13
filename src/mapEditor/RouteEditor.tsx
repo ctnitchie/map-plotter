@@ -9,7 +9,7 @@ export interface RouteEditorProps {
 
 export default function RouteEditor(props: RouteEditorProps) {
   const route: Route = props.routes[props.index];
-  const isContiguous = route.previousId && props.index > 0 && props.routes[props.index - 1].id === route.previousId;
+  const nonContiguous = route.previousId && props.index > 0 && props.routes[props.index - 1].id !== route.previousId;
 
   function onSourceChange(e: React.ChangeEvent<HTMLSelectElement>) {
     const newRoute = route.mutate({previousId: e.target.value});
@@ -22,7 +22,7 @@ export default function RouteEditor(props: RouteEditorProps) {
   }
 
   return (
-    <div className={`pointConfig col-12 card ${isContiguous ? 'contiguous' : 'noncontiguous'}`}>
+    <div className={`pointConfig card ${nonContiguous ? 'noncontiguous' : ''}`}>
       <div className="card-body">
         <select onChange={e => onSourceChange(e)}
             value={route.previousId || '--start--'}
