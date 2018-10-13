@@ -160,7 +160,7 @@ export class Route implements PlotLine {
   }
 }
 
-export class RouteJoin implements PlotLine {
+export class Connector implements PlotLine {
   constructor(
     public plot: MapPlot,
     public r1: RouteId,
@@ -190,14 +190,29 @@ export function isSamePointLocation(p1: Point, p2: Point): boolean {
   return p1.x === p2.x && p1.y === p2.y;
 }
 
-export class MapPlot {
+export interface MapData {
+  startLabel: string;
+  _routes: Route[];
+  _connectors: Connector[];
+  style: StyleOptions;
+}
 
-  constructor(
-    public startLabel: string = 'Origin',
-    private readonly _routes: Route[] = [],
-    private readonly _connectors: RouteJoin[] = [],
-    public readonly style: StyleOptions = DFLT_STYLE
-  ) {}
+const EMPTY_PLOT: MapData = {
+  startLabel: 'Origin',
+  _routes: [],
+  _connectors: [],
+  style: DFLT_STYLE
+};
+
+export class MapPlot {
+  startLabel: string;
+  private readonly _routes: Route[];
+  private readonly _connectors: Connector[];
+  public readonly style: StyleOptions;
+
+  constructor(data: MapData = EMPTY_PLOT) {
+    Object.assign(this, data);
+  }
 
   get startPoint(): Point {
     return {x: 0, y: 0, label: this.startLabel};
@@ -211,7 +226,7 @@ export class MapPlot {
     return [...this._routes];
   }
 
-  get connectors(): RouteJoin[] {
+  get connectors(): Connector[] {
     return [...this._connectors];
   }
 
@@ -268,7 +283,7 @@ export class MapPlot {
 
   addConnector(from: Route, to: Route, opts: LineOpts = {}): PlotLine {
     opts = {...{draw: true}, ...opts};
-    const route: RouteJoin = new RouteJoin(this, from ? from.id : null, to.id, opts);
+    const route: Connector = new Connector(this, from ? from.id : null, to.id, opts);
     this._connectors.push(route);
     return route;
   }
