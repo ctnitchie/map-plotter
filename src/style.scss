@@ -24,6 +24,15 @@ $mainHeight: 400px;
 
   .card-body {
     padding: .25rem;
+
+    .btn {
+      font-size: 10px;
+      padding: 2px 4px;
+
+      &:not(:last-child) {
+        margin-right: 4px;
+      }
+    }
   }
 
   .noncontiguous {
