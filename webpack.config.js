@@ -30,11 +30,19 @@ module.exports = {
         loader: 'ts-loader'
       }],
       exclude: /node_modules/
+    },
+    {
+      test: /\.s[ac]ss$/,
+      use: [
+        'style-loader',
+        'css-loader',
+        'sass-loader'
+      ]
     }]
   },
 
   resolve: {
-    extensions: ['.js', '.jsx', '.ts', '.tsx']
+    extensions: ['.js', '.jsx', '.ts', '.tsx', '.scss']
   },
 
   entry: './src/main.ts',

@@ -1,3 +1,4 @@
+import './style.scss';
 import { MapPlot, Route } from './MapPlot';
 import routeEditor from './mapEditor/MapEditor';
 
