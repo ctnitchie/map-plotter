@@ -1,4 +1,4 @@
-import {MapPlot, Point, Bounds, PlotLine} from './MapPlot';
+import {MapPlot, Point, Bounds, PlotLine, LineOpts} from './MapPlot';
 
 function getDistance(p1: Point, p2: Point): number {
   const b = p2.x - p1.x;
@@ -37,6 +37,7 @@ interface AdjustedLine {
   label: string;
   length: number;
   halfPoint: Point;
+  opts: LineOpts;
 }
 
 interface Adjustor {
@@ -82,7 +83,8 @@ function setupCanvas(canvas: HTMLCanvasElement, bounds: Bounds): Adjustor {
       p2: adjustPoint(endPoint),
       length: Math.round(getDistance(startPoint, endPoint)),
       halfPoint: adjustPoint(getMidpoint(startPoint, endPoint)),
-      label: lbl
+      label: lbl,
+      opts: l.opts
     };
   };
   return {
@@ -115,7 +117,8 @@ export default function draw(plot: MapPlot, canvas: HTMLCanvasElement) {
     cxt.beginPath();
     cxt.moveTo(l.p1.x, l.p1.y);
     cxt.lineTo(l.p2.x, l.p2.y);
-    cxt.strokeStyle = plot.style.lines;
+    cxt.lineWidth = l.opts.highlighted ? plot.style.highlightWidth : plot.style.lineWidth;
+    cxt.strokeStyle = l.opts.highlighted ? plot.style.highlight : plot.style.lines;
     cxt.stroke();
     if (l.label) {
       cxt.fillStyle = plot.style.lineLabels;

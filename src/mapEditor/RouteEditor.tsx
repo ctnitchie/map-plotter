@@ -21,8 +21,15 @@ export default function RouteEditor(props: RouteEditorProps) {
     props.onChange(route.mutate({[prop]: v}));
   }
 
+  function updateOpt(key: string, val: any): void {
+    const opts = {...route.opts, ...{[key]: val}};
+    props.onChange(route.mutate({opts}));
+  }
+
   return (
-    <div className={`pointConfig card ${nonContiguous ? 'noncontiguous' : ''}`}>
+    <div className={`pointConfig card ${nonContiguous ? 'noncontiguous' : ''} ${route.opts.highlighted ? 'highlighted' : ''}`}
+        onMouseEnter={e => updateOpt('highlighted', true)}
+        onMouseLeave={e => updateOpt('highlighted', false)}>
       <div className="card-body">
         <div className="row">
           <b className="col-2 text-right">From:</b>

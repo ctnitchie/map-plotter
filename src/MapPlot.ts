@@ -24,6 +24,9 @@ export interface StyleOptions {
   points: string;
   pointLabels: string;
   background: string;
+  highlight: string;
+  lineWidth: number;
+  highlightWidth: number;
 }
 
 export interface Bounds {
@@ -40,7 +43,8 @@ export const routeLabeler: LabelCB = (r: Route) => `${r.distance}' ${r.heading}Â
 
 export interface LineOpts {
   label?: string | boolean | LabelCB,
-  draw?: boolean
+  draw?: boolean,
+  highlighted?: boolean
 }
 
 export interface PlotLine {
@@ -156,7 +160,10 @@ export class MapPlot {
     pointRadius: 3,
     points: 'black',
     pointLabels: 'black',
-    background: '#adf'
+    background: '#adf',
+    highlight: 'red',
+    lineWidth: 1,
+    highlightWidth: 3
   };
 
   get startPoint(): Point {

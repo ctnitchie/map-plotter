@@ -18,6 +18,10 @@ $mainHeight: 400px;
   overflow: auto;
   border: solid 1px black;
 
+  .card.highlighted {
+    background-color: #ffc;
+  }
+
   .card-body {
     padding: .25rem;
   }
