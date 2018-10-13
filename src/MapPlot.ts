@@ -60,6 +60,7 @@ export class Route implements PlotLine {
     public opts: LineOpts = {}
   ) {
     this.opts = {...{label: routeLabeler, draw: true}, ...opts};
+    this.id = id || nextId();
   }
 
   isDescendantOf(r: Route | RouteId): boolean {
@@ -242,9 +243,6 @@ export class MapPlot {
   deleteRoute(route: RouteId | Route) {
     if (route instanceof Route) {
       route = route.id;
-    }
-    if (!route) {
-      return;
     }
     delete this.routesById[route];
     for (let i = 0; i < this.connectors.length; i++) {
