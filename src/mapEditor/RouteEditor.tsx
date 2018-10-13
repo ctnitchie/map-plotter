@@ -1,5 +1,5 @@
 import * as React from 'react';
-import Plot, { Route, Point, isSamePoint } from '../Plot';
+import { Route } from '../MapPlot';
 
 export interface RouteEditorProps {
   routes: Route[];

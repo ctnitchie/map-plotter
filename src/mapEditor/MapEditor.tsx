@@ -2,10 +2,10 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
 import RouteEditor from './RouteEditor';
-import Plot, { Route } from '../Plot';
+import { MapPlot, Route } from '../MapPlot';
 
 export interface RouteUIProps {
-  plot: Plot;
+  plot: MapPlot;
   onChange?: (route: Route) => void;
 }
 
@@ -43,7 +43,7 @@ export class RouteUI extends React.Component<RouteUIProps, UIState> {
   }
 }
 
-export default function render(plot: Plot, el: HTMLElement, onChange?: (route: Route) => void) {
+export default function render(plot: MapPlot, el: HTMLElement, onChange?: (route: Route) => void) {
   const ui = <RouteUI plot={plot} onChange={onChange}/>;
   ReactDOM.render(ui, el);
   return ui;

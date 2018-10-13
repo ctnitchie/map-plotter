@@ -51,7 +51,7 @@ export interface PlotLine {
 
 export class Route implements PlotLine {
   constructor(
-    public plot: Plot,
+    public plot: MapPlot,
     public id: RouteId,
     public previousId: RouteId,
     public heading: number,
@@ -124,7 +124,7 @@ export function isSamePointLocation(p1: Point, p2: Point): boolean {
   return p1.x === p2.x && p1.y === p2.y;
 }
 
-export default class Plot {
+export class MapPlot {
   readonly routesById: {[id: string]: Route} = {};
   readonly connectors: PlotLine[] = [];
   startLabel: string = 'Origin';

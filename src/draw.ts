@@ -1,4 +1,4 @@
-import Plot, {Point, Bounds, PlotLine, routeLabeler} from './Plot';
+import {MapPlot, Point, Bounds, PlotLine} from './MapPlot';
 
 function getDistance(p1: Point, p2: Point): number {
   const b = p2.x - p1.x;
@@ -91,7 +91,7 @@ function setupCanvas(canvas: HTMLCanvasElement, bounds: Bounds): Adjustor {
   };
 }
 
-function dot(plot: Plot, cxt: CanvasRenderingContext2D, p: Point) {
+function dot(plot: MapPlot, cxt: CanvasRenderingContext2D, p: Point) {
   cxt.beginPath();
   cxt.arc(p.x, p.y, plot.style.pointRadius, 0, 2 * Math.PI);
   cxt.fillStyle = plot.style.points;
@@ -104,7 +104,7 @@ function dot(plot: Plot, cxt: CanvasRenderingContext2D, p: Point) {
   }
 }
 
-export default function draw(plot: Plot, canvas: HTMLCanvasElement) {
+export default function draw(plot: MapPlot, canvas: HTMLCanvasElement) {
   const adjust = setupCanvas(canvas, plot.bounds);
   
   const cxt = canvas.getContext('2d');
