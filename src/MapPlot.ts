@@ -50,7 +50,7 @@ export interface LineOpts {
   highlighted?: boolean
 }
 
-const DFLT_LINE_OPTS = {
+export const DFLT_LINE_OPTS: LineOpts = {
   showLabel: true,
   draw: true,
   makeDot: true,
@@ -58,14 +58,28 @@ const DFLT_LINE_OPTS = {
   highlighted: false
 };
 
-const DFLT_ROUTE_OPTS = {
+export const DFLT_ROUTE_OPTS: LineOpts = {
   ...DFLT_LINE_OPTS,
   label: routeLabeler
 };
 
-const DFLT_JOIN_OPTS = {
+export const DFLT_JOIN_OPTS: LineOpts = {
   ...DFLT_LINE_OPTS,
   labelDot: false
+};
+
+export const DFLT_STYLE: StyleOptions = {
+  lineFont: '8pt sans-serif',
+  lines: 'gray',
+  lineLabels: 'red',
+  pointFont: '10pt sans-serif',
+  pointRadius: 3,
+  points: 'black',
+  pointLabels: 'black',
+  background: '#adf',
+  highlight: 'red',
+  lineWidth: 1,
+  highlightWidth: 3
 };
 
 export interface PlotLine {
@@ -177,22 +191,13 @@ export function isSamePointLocation(p1: Point, p2: Point): boolean {
 }
 
 export class MapPlot {
-  private readonly _routes: Route[] = [];
-  readonly connectors: RouteJoin[] = [];
-  startLabel: string = 'Origin';
-  readonly style: StyleOptions = {
-    lineFont: '8pt sans-serif',
-    lines: 'gray',
-    lineLabels: 'red',
-    pointFont: '10pt sans-serif',
-    pointRadius: 3,
-    points: 'black',
-    pointLabels: 'black',
-    background: '#adf',
-    highlight: 'red',
-    lineWidth: 1,
-    highlightWidth: 3
-  };
+
+  constructor(
+    public startLabel: string = 'Origin',
+    private readonly _routes: Route[] = [],
+    private readonly _connectors: RouteJoin[] = [],
+    public readonly style: StyleOptions = DFLT_STYLE
+  ) {}
 
   get startPoint(): Point {
     return {x: 0, y: 0, label: this.startLabel};
@@ -204,6 +209,10 @@ export class MapPlot {
 
   get routes(): Route[] {
     return [...this._routes];
+  }
+
+  get connectors(): RouteJoin[] {
+    return [...this._connectors];
   }
 
   updateRoute(r: Route): void {
@@ -220,7 +229,7 @@ export class MapPlot {
   }
 
   get lines(): PlotLine[] {
-    return [...this._routes, ...this.connectors];
+    return [...this._routes, ...this._connectors];
   }
 
   get bounds(): Bounds {
@@ -260,7 +269,7 @@ export class MapPlot {
   addConnector(from: Route, to: Route, opts: LineOpts = {}): PlotLine {
     opts = {...{draw: true}, ...opts};
     const route: RouteJoin = new RouteJoin(this, from ? from.id : null, to.id, opts);
-    this.connectors.push(route);
+    this._connectors.push(route);
     return route;
   }
 
@@ -301,10 +310,10 @@ export class MapPlot {
     const index = this._routes.findIndex(r => r.id === route);
     if (index === -1) return;
     this._routes.splice(index, 1);
-    for (let i = 0; i < this.connectors.length; i++) {
-      const c = this.connectors[i];
+    for (let i = 0; i < this._connectors.length; i++) {
+      const c = this._connectors[i];
       if (c.r1 === route || c.r2 === route) {
-        this.connectors.splice(i, 1);
+        this._connectors.splice(i, 1);
         i--;
       }
     }
