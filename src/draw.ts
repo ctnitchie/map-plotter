@@ -67,14 +67,14 @@ function setupCanvas(canvas: HTMLCanvasElement, bounds: Bounds): Adjustor {
     };
   };
   const adjustLine = (l: PlotLine) => {
-    const {startsAt, endsAt} = l;
+    const {startPoint, endPoint} = l;
     return <AdjustedLine> {
-      p1: adjustPoint(startsAt),
-      p2: adjustPoint(endsAt),
-      length: Math.round(getDistance(startsAt, endsAt)),
-      halfPoint: adjustPoint(getMidpoint(startsAt, endsAt)),
+      p1: adjustPoint(startPoint),
+      p2: adjustPoint(endPoint),
+      length: Math.round(getDistance(startPoint, endPoint)),
+      halfPoint: adjustPoint(getMidpoint(startPoint, endPoint)),
       label: l.opts.label ? l.opts.label + '' : null
-    }
+    };
   };
   return {
     point: adjustPoint,
@@ -84,7 +84,7 @@ function setupCanvas(canvas: HTMLCanvasElement, bounds: Bounds): Adjustor {
 
 function dot(plot: Plot, cxt: CanvasRenderingContext2D, p: Point) {
   cxt.beginPath();
-  cxt.arc(p.x, p.y, 3, 0, 2 * Math.PI);
+  cxt.arc(p.x, p.y, plot.style.pointRadius, 0, 2 * Math.PI);
   cxt.fillStyle = plot.style.points;
   cxt.fill();
 

@@ -1,5 +1,14 @@
 import draw from './draw';
 
+export type RouteId = string;
+
+export const nextId: () => RouteId = (function() {
+  let nextId = 0;
+  return () => {
+    return `path${++nextId}`;
+  }
+}());
+
 export interface Point {
   x: number;
   y: number;
@@ -16,6 +25,7 @@ export interface StyleOptions {
   lines: string;
   lineLabels: string;
   pointFont: string;
+  pointRadius: number;
   points: string;
   pointLabels: string;
   background: string;
@@ -31,46 +41,78 @@ export interface Bounds {
 }
 
 export interface PlotLine {
-  readonly startsAt: Point;
-  readonly endsAt: Point;
-  readonly opts: LineOpts;
-}
-
-export interface RouteConfig {
-  startsAt: Point;
-  heading: number;
-  distance: number;
-  endLabel?: string;
-  opts?: LineOpts;
-  [key: string]: any;
+  readonly startPoint: Point;
+  readonly endPoint: Point;
+  readonly opts?: LineOpts;
 }
 
 export class Route implements PlotLine {
-  startsAt: Point;
-  heading: number;
-  distance: number;
-  endLabel?: string;
-  opts: LineOpts = {};
-  
-  constructor(config: RouteConfig) {
-    Object.assign(this, config);
-    this.opts = {...{label: true, draw: true}, ...config.opts};
+  constructor(
+    public plot: Plot,
+    public id: RouteId,
+    public previousId: RouteId,
+    public heading: number,
+    public distance: number,
+    public endLabel?: string,
+    public opts: LineOpts = {}
+  ) {
+    this.opts = {...{label: true, draw: true}, ...opts};
     if (this.opts.label === true) {
-      this.opts.label = `${config.distance}' ${config.heading}°`;
+      this.opts.label = `${distance}' ${heading}°`;
     }
   }
 
-  get endsAt(): Point {
+  isDescendantOf(r: Route | RouteId): boolean {
+    if (r instanceof Route) {
+      r = r.id;
+    }
+    if (this.previousId === r) {
+      return true;
+    }
+    if (!this.previousId) {
+      return false;
+    }
+    return this.previous.isDescendantOf(r);
+  }
+
+  isDescendantOfOrSelf(r: Route | RouteId): boolean {
+    if (r instanceof Route) {
+      r = r.id;
+    }
+    return this.id === r || this.isDescendantOf(r);
+  }
+
+  get previous(): Route {
+    return this.previousId ? this.plot.routesById[this.previousId] : null;
+  }
+
+  get startPoint(): Point {
+    return this.previous ? this.previous.endPoint : this.plot.startPoint;
+  }
+
+  get endPoint(): Point {
     let orientedHeading = 90 - this.heading;
     while (orientedHeading < 0) {
       orientedHeading += 360;
     }
     const rads = orientedHeading * Math.PI / 180;
+    const start = this.startPoint;
     return {
-      x: this.startsAt.x + (Math.cos(rads) * this.distance),
-      y: this.startsAt.y + (Math.sin(rads) * this.distance),
+      x: start.x + (Math.cos(rads) * this.distance),
+      y: start.y + (Math.sin(rads) * this.distance),
       label: this.endLabel
     };
+  }
+
+  clone(): Route {
+    return new Route(this.plot, this.id, this.previousId, this.heading,
+        this.distance, this.endLabel, this.opts);
+  }
+
+  mutate(update: any): Route {
+    const c = this.clone();
+    Object.assign(c, update);
+    return c;
   }
 }
 
@@ -83,33 +125,35 @@ export function isSamePointLocation(p1: Point, p2: Point): boolean {
 }
 
 export default class Plot {
-  public readonly routes: Route[] = [];
-  public readonly connectors: PlotLine[] = [];
-  startPoint: Point = {
-    x: 0,
-    y: 0,
-    label: 'Origin'
-  };
-  style: StyleOptions = {
+  readonly routesById: {[id: string]: Route} = {};
+  readonly connectors: PlotLine[] = [];
+  startLabel: string = 'Origin';
+  readonly style: StyleOptions = {
     lineFont: '8pt sans-serif',
     lines: 'gray',
     lineLabels: 'red',
     pointFont: '10pt sans-serif',
+    pointRadius: 3,
     points: 'black',
     pointLabels: 'black',
     background: '#adf'
   };
 
-  updateRoutes(arr: RouteConfig[]) {
-    this.routes.length = 0;
-    this.connectors.length = 0;
-    arr.forEach(r => {
-      this.addLineFrom(r.startsAt, r.heading, r.distance, r.endLabel, r.opts);
-    });
+  get startPoint(): Point {
+    return {x: 0, y: 0, label: this.startLabel};
+  }
+
+  get routes(): Route[] {
+    return Object.keys(this.routesById).map(id => this.routesById[id]);
+  }
+
+  updateRoute(r: Route): void {
+    this.routesById[r.id] = r;
   }
 
   get points(): Point[] {
-    return [this.startPoint].concat(this.routes.map(r => r.endsAt));
+    const arr: Point[] = this.routes.map(r => r.endPoint);
+    return [this.startPoint].concat(arr);
   }
 
   get lines(): PlotLine[] {
@@ -122,7 +166,7 @@ export default class Plot {
     let minY = 0;
     let maxY = 10;
     this.routes.forEach(r => {
-      const p = r.endsAt;
+      const p = r.endPoint;
       minX = Math.min(p.x, minX);
       minY = Math.min(p.y, minY);
       maxX = Math.max(p.x, maxX);
@@ -150,51 +194,28 @@ export default class Plot {
     };
   }
 
-  findPoint(name: string): Point {
-    if (name === this.startPoint.label) {
-      return this.startPoint;
-    }
-    const r = this.routes.find(r => r.endLabel === name);
-    return r ? r.endsAt : null;
-  }
-
-  findPointOrThrow(name: string): Point {
-    const p = this.findPoint(name);
-    if (!p) {
-      throw new Error(`No such point: ${name}`);
-    }
-    return p;
-  }
-
-  addLineBetween(from: Point | string, to: Point | string, opts: LineOpts = {}): PlotLine {
+  addConnector(from: Point, to: Point, opts: LineOpts = {}): PlotLine {
     opts = {...{draw: true}, ...opts};
-    if (typeof from === 'string') {
-      from = this.findPointOrThrow(from);
-    }
-    if (typeof to === 'string') {
-      to = this.findPointOrThrow(to);
-    }
     const route: PlotLine = {
-      startsAt: from,
-      endsAt: to,
+      startPoint: from,
+      endPoint: to,
       opts
     };
     this.connectors.push(route);
     return route;
   }
 
-  addLineFrom(startsAt: Point | string, heading: number, distance: number,
-      endLabel: string = undefined, opts: LineOpts = {}): Point {
+  addRoute(previous: Route, heading: number, distance: number,
+      endLabel: string = undefined, opts: LineOpts = {}): Route {
     
-    if (typeof startsAt === 'string') {
-      startsAt = this.findPointOrThrow(startsAt);
-    }
-    const route = new Route({startsAt, heading, distance, endLabel, opts});
-    this.routes.push(route);
-    return route.endsAt;
+    const prevId = previous ? previous.id : null;
+    const route = new Route(this, nextId(), prevId, heading,
+        distance, endLabel, opts);
+    this.routesById[route.id] = route;
+    return route;
   }
 
-  addRoute(route: Route) {
+  addRouteObject(route: Route) {
     this.routes.push(route);
   }
 

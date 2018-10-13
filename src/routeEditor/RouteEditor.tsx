@@ -1,38 +1,37 @@
 import * as React from 'react';
-import Plot, { Route, RouteConfig, Point, isSamePoint } from '../Plot';
+import Plot, { Route, Point, isSamePoint } from '../Plot';
 
 export interface RouteEditorProps {
-  routes: RouteConfig[];
+  routes: Route[];
   index: number;
-  points: Point[];
-  onChange: (r: RouteConfig) => void;
+  onChange: (r: Route) => void;
 }
 
 export default function RouteEditor(props: RouteEditorProps) {
-  const route: RouteConfig = props.routes[props.index];
+  const route: Route = props.routes[props.index];
 
   function onSourceChange(e: React.ChangeEvent<HTMLSelectElement>) {
-    const index: number = parseInt(e.target.value);
-    const p: Point = props.points[index];
-    props.onChange({...route, startsAt: p});
+    const newRoute = route.mutate({previousId: e.target.value});
+    props.onChange(newRoute);
   }
 
   function updateRoute(e: React.ChangeEvent<HTMLInputElement>, prop: string, num: boolean = false) {
-    const newRoute: RouteConfig = {...route};
     const v = num ? parseInt(e.target.value) : e.target.value;
-    newRoute[prop] = v;
-    props.onChange(newRoute);
+    props.onChange(route.mutate({[prop]: v}));
   }
 
   return (
     <div className="pointConfig col-12">
       <div className="row">
-        <select onChange={onSourceChange}
-            value={props.points.findIndex(p => isSamePoint(p, route.startsAt))}
+        <select onChange={e => onSourceChange(e)}
+            value={route.previousId || '--start--'}
             className="col-5">
           <option value="">Select...</option>
-          {props.points.map((p, index) => (
-            <option key={index} value={index}>{p.label}</option>
+          <option value="--start--">(Start)</option>
+          {props.routes.filter(r => !r.isDescendantOfOrSelf(route)).map(r => (
+            <option key={r.id} value={r.id}>
+              {r.endLabel || `(${Math.round(r.endPoint.x)}, ${Math.round(r.endPoint.y)})`}
+            </option>
           ))}
         </select>
         <input type="text" className="col-5" placeholder="Label"
