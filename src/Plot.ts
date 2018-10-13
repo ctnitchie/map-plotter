@@ -15,11 +15,6 @@ export interface Point {
   label?: string;
 }
 
-export interface LineOpts {
-  label?: string | boolean,
-  draw?: boolean
-}
-
 export interface StyleOptions {
   lineFont: string;
   lines: string;
@@ -40,10 +35,18 @@ export interface Bounds {
   height: number;
 }
 
+type LabelCB = (l: PlotLine) => string;
+export const routeLabeler: LabelCB = (r: Route) => `${r.distance}' ${r.heading}°`;
+
+export interface LineOpts {
+  label?: string | boolean | LabelCB,
+  draw?: boolean
+}
+
 export interface PlotLine {
   readonly startPoint: Point;
   readonly endPoint: Point;
-  readonly opts?: LineOpts;
+  readonly opts: LineOpts;
 }
 
 export class Route implements PlotLine {
@@ -56,10 +59,7 @@ export class Route implements PlotLine {
     public endLabel?: string,
     public opts: LineOpts = {}
   ) {
-    this.opts = {...{label: true, draw: true}, ...opts};
-    if (this.opts.label === true) {
-      this.opts.label = `${distance}' ${heading}°`;
-    }
+    this.opts = {...{label: routeLabeler, draw: true}, ...opts};
   }
 
   isDescendantOf(r: Route | RouteId): boolean {

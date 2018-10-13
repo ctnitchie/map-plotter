@@ -1,4 +1,4 @@
-import Plot, {Point, Bounds, PlotLine} from './Plot';
+import Plot, {Point, Bounds, PlotLine, routeLabeler} from './Plot';
 
 function getDistance(p1: Point, p2: Point): number {
   const b = p2.x - p1.x;
@@ -68,12 +68,21 @@ function setupCanvas(canvas: HTMLCanvasElement, bounds: Bounds): Adjustor {
   };
   const adjustLine = (l: PlotLine) => {
     const {startPoint, endPoint} = l;
+    let lbl = l.opts.label;
+    switch (typeof lbl) {
+      case 'function':
+        lbl = lbl(l);
+        break;
+      case 'boolean':
+        lbl = null;
+        break;
+    }
     return <AdjustedLine> {
       p1: adjustPoint(startPoint),
       p2: adjustPoint(endPoint),
       length: Math.round(getDistance(startPoint, endPoint)),
       halfPoint: adjustPoint(getMidpoint(startPoint, endPoint)),
-      label: l.opts.label ? l.opts.label + '' : null
+      label: lbl
     };
   };
   return {
