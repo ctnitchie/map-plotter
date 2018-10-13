@@ -79,10 +79,16 @@ export default function RouteEditor(props: RouteEditorProps) {
         </div>
         <div className="row" style={{marginTop: '4px'}}>
           <div className="col-8">
-            <input type="checkbox" checked={route.opts.draw} onChange={e => updateOpt('draw', e.target.checked)}/> Draw
-            <input type="checkbox" checked={route.opts.showLabel} onChange={e => updateOpt('showLabel', e.target.checked)}/> Label Line
-            <input type="checkbox" checked={route.opts.makeDot} onChange={e => updateOpt('makeDot', e.target.checked)}/> Dot at Endpoint
-            <input type="checkbox" checked={route.opts.labelDot} onChange={e => updateOpt('labelDot', e.target.checked)}/> Label Dot
+            <input type="checkbox" checked={route.opts.draw}
+                onChange={e => updateOpt('draw', e.target.checked)}/> Draw Line
+            <input type="checkbox" checked={route.opts.draw && route.opts.showLabel}
+                onChange={e => updateOpt('showLabel', e.target.checked)}
+                disabled={!route.opts.draw}/> Label Line
+            <input type="checkbox" checked={route.opts.makeDot}
+                onChange={e => updateOpt('makeDot', e.target.checked)}/> Draw Dot
+            <input type="checkbox" checked={route.opts.makeDot && route.opts.labelDot}
+                onChange={e => updateOpt('labelDot', e.target.checked)}
+                disabled={!route.opts.makeDot}/> Label Dot
           </div>
           <div className="col-4 text-right">
             <button className="btn btn-sm btn-success" onClick={addRoute}>Add</button>

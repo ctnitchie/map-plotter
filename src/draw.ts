@@ -106,15 +106,13 @@ export default function draw(plot: MapPlot, canvas: HTMLCanvasElement) {
   canvas.parentElement.style.backgroundColor = plot.style.background;
   
   const lines = plot.lines.map(adjust.line);
-  lines.forEach(l => {
-    if (l.opts.draw) {
-      cxt.beginPath();
-      cxt.moveTo(l.p1.x, l.p1.y);
-      cxt.lineTo(l.p2.x, l.p2.y);
-      cxt.lineWidth = l.opts.highlighted ? plot.style.highlightWidth : plot.style.lineWidth;
-      cxt.strokeStyle = l.opts.highlighted ? plot.style.highlight : plot.style.lines;
-      cxt.stroke();
-    }
+  lines.filter(l => l.opts.draw).forEach(l => {
+    cxt.beginPath();
+    cxt.moveTo(l.p1.x, l.p1.y);
+    cxt.lineTo(l.p2.x, l.p2.y);
+    cxt.lineWidth = l.opts.highlighted ? plot.style.highlightWidth : plot.style.lineWidth;
+    cxt.strokeStyle = l.opts.highlighted ? plot.style.highlight : plot.style.lines;
+    cxt.stroke();
     if (l.label) {
       cxt.fillStyle = plot.style.lineLabels;
       cxt.font = plot.style.lineFont;

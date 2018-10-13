@@ -79,13 +79,13 @@ window.addEventListener('DOMContentLoaded', function() {
     const pvcPipe = plot.addRoute(brynne, baseLine, 75, 'PVC Pipe');
     const westPlatform = plot.addRoute(pvcPipe, baseLine, 67, 'West Platform');
     const westPlatformWest = plot.addRoute(westPlatform, 270, 10, 'West Platform Far Corner', {showLabel: false, labelDot: false});
-    const hoop = plot.addRoute(westPlatformWest, 315, 64, 'Hoop');
+    const hoop = plot.addRoute(westPlatformWest, 315, 64, 'Hoop 2');
     const trash = plot.addRoute(hoop, 315, 50, 'Trash');
-    const hoop2 = plot.addRoute(westPlatformWest, 335, 21, 'Hoop');
+    const hoop2 = plot.addRoute(westPlatformWest, 335, 21, 'Hoop 1');
     const end = plot.addRoute(hoop2, 335, 113, 'End of the Line');
     const gocart = plot.addRoute(westPlatform, westLine, 56, 'Cart');
-    const hoop3 = plot.addRoute(gocart, westLine, 19, 'Hoop');
-    const buddah2 = plot.addRoute(hoop3, westLine, 129, 'Buddah (return)', {labelDot: false});
+    const hoop3 = plot.addRoute(gocart, westLine, 19, 'Hoop 5');
+    const buddah2 = plot.addRoute(hoop3, westLine, 129, 'Buddah (return)', {makeDot: false});
 
     // Draw the East platform
     plot.addConnector(null, platformReturn);
