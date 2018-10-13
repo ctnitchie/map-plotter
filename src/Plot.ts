@@ -36,32 +36,50 @@ export interface PlotLine {
   readonly opts: LineOpts;
 }
 
+export interface RouteConfig {
+  startsAt: Point;
+  heading: number;
+  distance: number;
+  endLabel?: string;
+  opts?: LineOpts;
+  [key: string]: any;
+}
+
 export class Route implements PlotLine {
-  public endsAt: Point;
-
-  constructor(
-    public startsAt: Point,
-    public heading: number,
-    public distance: number,
-    public endLabel: string = null,
-    public opts: LineOpts = {}
-  ) {
-    this.opts = {...{label: true, draw: true}, ...opts};
+  startsAt: Point;
+  heading: number;
+  distance: number;
+  endLabel?: string;
+  opts: LineOpts = {};
+  
+  constructor(config: RouteConfig) {
+    Object.assign(this, config);
+    this.opts = {...{label: true, draw: true}, ...config.opts};
     if (this.opts.label === true) {
-      this.opts.label = `${distance}' ${heading}°`;
+      this.opts.label = `${config.distance}' ${config.heading}°`;
     }
+  }
 
+  get endsAt(): Point {
     let orientedHeading = 90 - this.heading;
     while (orientedHeading < 0) {
       orientedHeading += 360;
     }
     const rads = orientedHeading * Math.PI / 180;
-    this.endsAt = {
+    return {
       x: this.startsAt.x + (Math.cos(rads) * this.distance),
       y: this.startsAt.y + (Math.sin(rads) * this.distance),
       label: this.endLabel
     };
   }
+}
+
+export function isSamePoint(p1: Point, p2: Point): boolean {
+  return isSamePointLocation(p1, p2) && p1.label === p2.label;
+}
+
+export function isSamePointLocation(p1: Point, p2: Point): boolean {
+  return p1.x === p2.x && p1.y === p2.y;
 }
 
 export default class Plot {
@@ -81,6 +99,14 @@ export default class Plot {
     pointLabels: 'black',
     background: '#adf'
   };
+
+  updateRoutes(arr: RouteConfig[]) {
+    this.routes.length = 0;
+    this.connectors.length = 0;
+    arr.forEach(r => {
+      this.addLineFrom(r.startsAt, r.heading, r.distance, r.endLabel, r.opts);
+    });
+  }
 
   get points(): Point[] {
     return [this.startPoint].concat(this.routes.map(r => r.endsAt));
@@ -157,12 +183,13 @@ export default class Plot {
     return route;
   }
 
-  addLineFrom(from: Point | string, deg: number, distance: number, label: string = undefined, opts: LineOpts = {}): Point {
-    opts = {...{draw: true, label: `${distance}' ${deg}°`}, ...opts};
-    if (typeof from === 'string') {
-      from = this.findPointOrThrow(from);
+  addLineFrom(startsAt: Point | string, heading: number, distance: number,
+      endLabel: string = undefined, opts: LineOpts = {}): Point {
+    
+    if (typeof startsAt === 'string') {
+      startsAt = this.findPointOrThrow(startsAt);
     }
-    const route = new Route(from, deg, distance, label, opts);
+    const route = new Route({startsAt, heading, distance, endLabel, opts});
     this.routes.push(route);
     return route.endsAt;
   }

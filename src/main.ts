@@ -1,4 +1,4 @@
-import Plot from './Plot';
+import Plot, { RouteConfig } from './Plot';
 import routeEditor from './routeEditor/index';
 
 window.addEventListener('DOMContentLoaded', function() {
@@ -97,6 +97,9 @@ window.addEventListener('DOMContentLoaded', function() {
   const canvas: HTMLCanvasElement = <HTMLCanvasElement> document.getElementById('canvas');
   const plot = adjusted2();
   plot.draw(canvas);
-  routeEditor(plot, document.getElementById('editor'));
+  routeEditor(plot, document.getElementById('editor'), (arr: RouteConfig[]) => {
+    plot.updateRoutes(arr);
+    plot.draw(canvas);
+  });
   window.addEventListener('resize', () => plot.draw(canvas), false);
 });
