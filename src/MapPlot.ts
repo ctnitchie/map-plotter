@@ -52,15 +52,14 @@ export interface PlotLine {
 export class Route implements PlotLine {
   constructor(
     public plot: MapPlot,
-    public id: RouteId,
     public previousId: RouteId,
     public heading: number,
     public distance: number,
     public endLabel?: string,
-    public opts: LineOpts = {}
+    public opts: LineOpts = {},
+    public id: RouteId = nextId()
   ) {
     this.opts = {...{label: routeLabeler, draw: true}, ...opts};
-    this.id = id || nextId();
   }
 
   isDescendantOf(r: Route | RouteId): boolean {
@@ -106,8 +105,8 @@ export class Route implements PlotLine {
   }
 
   clone(): Route {
-    return new Route(this.plot, this.id, this.previousId, this.heading,
-        this.distance, this.endLabel, this.opts);
+    return new Route(this.plot, this.previousId, this.heading,
+        this.distance, this.endLabel, this.opts, this.id);
   }
 
   mutate(update: any): Route {
@@ -226,7 +225,7 @@ export class MapPlot {
       endLabel: string = undefined, opts: LineOpts = {}): Route {
     
     const prevId = previous ? previous.id : null;
-    const route = new Route(this, nextId(), prevId, heading,
+    const route = new Route(this, prevId, heading,
         distance, endLabel, opts);
     this.routesById[route.id] = route;
     return route;
