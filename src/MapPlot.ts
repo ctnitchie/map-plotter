@@ -95,15 +95,17 @@ export class Route implements PlotLine {
   }
 
   get endPoint(): Point {
-    let orientedHeading = 90 - this.heading;
+    const heading = this.heading === null ? 0 : this.heading;
+    const distance = this.distance === null ? 0 : this.distance;
+    let orientedHeading = 90 - heading;
     while (orientedHeading < 0) {
       orientedHeading += 360;
     }
     const rads = orientedHeading * Math.PI / 180;
     const start = this.startPoint;
     return {
-      x: start.x + (Math.cos(rads) * this.distance),
-      y: start.y + (Math.sin(rads) * this.distance),
+      x: start.x + (Math.cos(rads) * distance),
+      y: start.y + (Math.sin(rads) * distance),
       label: this.endLabel
     };
   }

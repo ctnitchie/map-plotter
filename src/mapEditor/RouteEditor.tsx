@@ -19,7 +19,8 @@ export default function RouteEditor(props: RouteEditorProps) {
   }
 
   function updateRoute(e: React.ChangeEvent<HTMLInputElement>, prop: string, num: boolean = false) {
-    const v = num ? parseInt(e.target.value) : e.target.value;
+    let v = num ? parseInt(e.target.value) : e.target.value;
+    if (num && isNaN(v as number)) v = null;
     props.listener.onChange(route.mutate({[prop]: v}), props.index);
   }
 
@@ -75,9 +76,11 @@ export default function RouteEditor(props: RouteEditorProps) {
                 onChange={e => updateRoute(e, 'endLabel')} value={route.endLabel}/>
           </div>
         </div>
-        <div className="text-right">
-          <button className="btn btn-sm btn-success" onClick={addRoute}>Add</button>
-          <button className="btn btn-sm btn-danger" onClick={removeRoute}>Delete</button>
+        <div className="row text-right" style={{marginTop: '4px'}}>
+          <div className="col-12">
+            <button className="btn btn-sm btn-success" onClick={addRoute}>Add</button>
+            <button className="btn btn-sm btn-danger" onClick={removeRoute}>Delete</button>
+          </div>
         </div>
       </div>
     </div>
