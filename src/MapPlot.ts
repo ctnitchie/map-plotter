@@ -42,10 +42,31 @@ type LabelCB = (l: PlotLine) => string;
 export const routeLabeler: LabelCB = (r: Route) => `${r.distance}' ${r.heading}°`;
 
 export interface LineOpts {
-  label?: string | boolean | LabelCB,
+  label?: LabelCB,
+  showLabel?: boolean,
   draw?: boolean,
+  makeDot?: boolean,
+  labelDot?: boolean,
   highlighted?: boolean
 }
+
+const DFLT_LINE_OPTS = {
+  showLabel: true,
+  draw: true,
+  makeDot: true,
+  labelDot: true,
+  highlighted: false
+};
+
+const DFLT_ROUTE_OPTS = {
+  ...DFLT_LINE_OPTS,
+  label: routeLabeler
+};
+
+const DFLT_JOIN_OPTS = {
+  ...DFLT_LINE_OPTS,
+  labelDot: false
+};
 
 export interface PlotLine {
   readonly startPoint: Point;
@@ -63,10 +84,13 @@ export class Route implements PlotLine {
     public opts: LineOpts = {},
     public id: RouteId = nextId()
   ) {
-    this.opts = {...{label: routeLabeler, draw: true}, ...opts};
+    this.opts = {...DFLT_ROUTE_OPTS, ...opts};
   }
 
   isDescendantOf(r: Route | RouteId): boolean {
+    if (!this.previousId) {
+      return false;
+    }
     if (r instanceof Route) {
       r = r.id;
     }
@@ -128,7 +152,9 @@ export class RouteJoin implements PlotLine {
     public r1: RouteId,
     public r2: RouteId,
     public opts: LineOpts
-  ) {}
+  ) {
+    this.opts = {...DFLT_JOIN_OPTS, ...opts};
+  }
   
   get startPoint(): Point {
     if (!this.r1) {
@@ -189,7 +215,7 @@ export class MapPlot {
   }
 
   get points(): Point[] {
-    const arr: Point[] = this._routes.map(r => r.endPoint);
+    const arr: Point[] = this._routes.filter(r => r.opts.makeDot).map(r => r.endPoint);
     return [this.startPoint].concat(arr);
   }
 

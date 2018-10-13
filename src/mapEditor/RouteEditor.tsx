@@ -14,7 +14,8 @@ export default function RouteEditor(props: RouteEditorProps) {
   const nonContiguous = route.previousId && props.index > 0 && props.routes[props.index - 1].id !== route.previousId;
 
   function onSourceChange(e: React.ChangeEvent<HTMLSelectElement>) {
-    const newRoute = route.mutate({previousId: e.target.value});
+    const newId = e.target.value;
+    const newRoute = route.mutate({previousId: newId === '--start--' ? null : newId});
     props.listener.onChange(newRoute, props.index);
   }
 
@@ -48,7 +49,7 @@ export default function RouteEditor(props: RouteEditorProps) {
             <select onChange={e => onSourceChange(e)}
                 value={route.previousId || '--start--'}
                 style={{width: '100%'}}>
-              <option value="--start--">(Start)</option>
+              <option value="--start--">{props.plot.startLabel}</option>
               {props.routes.filter(r => !r.isDescendantOfOrSelf(route)).map(r => (
                 <option key={r.id} value={r.id}>
                   {r.endLabel || `(${Math.round(r.endPoint.x)}, ${Math.round(r.endPoint.y)})`}
@@ -76,8 +77,14 @@ export default function RouteEditor(props: RouteEditorProps) {
                 onChange={e => updateRoute(e, 'endLabel')} value={route.endLabel}/>
           </div>
         </div>
-        <div className="row text-right" style={{marginTop: '4px'}}>
-          <div className="col-12">
+        <div className="row" style={{marginTop: '4px'}}>
+          <div className="col-8">
+            <input type="checkbox" checked={route.opts.draw} onChange={e => updateOpt('draw', e.target.checked)}/> Draw
+            <input type="checkbox" checked={route.opts.showLabel} onChange={e => updateOpt('showLabel', e.target.checked)}/> Label Line
+            <input type="checkbox" checked={route.opts.makeDot} onChange={e => updateOpt('makeDot', e.target.checked)}/> Dot at Endpoint
+            <input type="checkbox" checked={route.opts.labelDot} onChange={e => updateOpt('labelDot', e.target.checked)}/> Label Dot
+          </div>
+          <div className="col-4 text-right">
             <button className="btn btn-sm btn-success" onClick={addRoute}>Add</button>
             <button className="btn btn-sm btn-danger" onClick={removeRoute}>Delete</button>
           </div>

@@ -69,21 +69,13 @@ function setupCanvas(canvas: HTMLCanvasElement, bounds: Bounds): Adjustor {
   };
   const adjustLine = (l: PlotLine) => {
     const {startPoint, endPoint} = l;
-    let lbl = l.opts.label;
-    switch (typeof lbl) {
-      case 'function':
-        lbl = lbl(l);
-        break;
-      case 'boolean':
-        lbl = null;
-        break;
-    }
+    let lbl = l.opts.label ? l.opts.label(l) : null;
     return <AdjustedLine> {
       p1: adjustPoint(startPoint),
       p2: adjustPoint(endPoint),
       length: Math.round(getDistance(startPoint, endPoint)),
       halfPoint: adjustPoint(getMidpoint(startPoint, endPoint)),
-      label: lbl,
+      label: l.opts.showLabel ? lbl : null,
       opts: l.opts
     };
   };
@@ -93,13 +85,13 @@ function setupCanvas(canvas: HTMLCanvasElement, bounds: Bounds): Adjustor {
   };
 }
 
-function dot(plot: MapPlot, cxt: CanvasRenderingContext2D, p: Point) {
+function dot(plot: MapPlot, cxt: CanvasRenderingContext2D, p: Point, label: boolean) {
   cxt.beginPath();
   cxt.arc(p.x, p.y, plot.style.pointRadius, 0, 2 * Math.PI);
   cxt.fillStyle = plot.style.points;
   cxt.fill();
 
-  if (p.label) {
+  if (p.label && label) {
     cxt.fillStyle = plot.style.pointLabels;
     cxt.font = plot.style.pointFont;
     cxt.fillText(p.label, p.x + 5, p.y + 8);
@@ -113,13 +105,16 @@ export default function draw(plot: MapPlot, canvas: HTMLCanvasElement) {
   cxt.clearRect(0, 0, canvas.width, canvas.height);
   canvas.parentElement.style.backgroundColor = plot.style.background;
   
-  plot.lines.filter(l => l.opts.draw).map(adjust.line).forEach(l => {
-    cxt.beginPath();
-    cxt.moveTo(l.p1.x, l.p1.y);
-    cxt.lineTo(l.p2.x, l.p2.y);
-    cxt.lineWidth = l.opts.highlighted ? plot.style.highlightWidth : plot.style.lineWidth;
-    cxt.strokeStyle = l.opts.highlighted ? plot.style.highlight : plot.style.lines;
-    cxt.stroke();
+  const lines = plot.lines.map(adjust.line);
+  lines.forEach(l => {
+    if (l.opts.draw) {
+      cxt.beginPath();
+      cxt.moveTo(l.p1.x, l.p1.y);
+      cxt.lineTo(l.p2.x, l.p2.y);
+      cxt.lineWidth = l.opts.highlighted ? plot.style.highlightWidth : plot.style.lineWidth;
+      cxt.strokeStyle = l.opts.highlighted ? plot.style.highlight : plot.style.lines;
+      cxt.stroke();
+    }
     if (l.label) {
       cxt.fillStyle = plot.style.lineLabels;
       cxt.font = plot.style.lineFont;
@@ -127,5 +122,8 @@ export default function draw(plot: MapPlot, canvas: HTMLCanvasElement) {
     }
   });
 
-  plot.points.map(adjust.point).forEach(p => dot(plot, cxt, p));
+  dot(plot, cxt, adjust.point(plot.startPoint), true);
+  lines.filter(l => l.opts.makeDot).forEach(l => {
+    dot(plot, cxt, l.p2, l.opts.labelDot);
+  });
 }

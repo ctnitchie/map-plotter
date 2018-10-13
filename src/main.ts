@@ -72,20 +72,20 @@ window.addEventListener('DOMContentLoaded', function() {
     const buddha = plot.addRoute(dino, 330, 51, 'Buddha');
     const david = plot.addRoute(buddha, eastLine, 70, 'David');
     const soldier = plot.addRoute(david, eastLine, 58, 'Soldier');
-    const platformReturn = plot.addRoute(soldier, eastLine, 46, '');
-    const lady = plot.addRoute(platformReturn, 325, 19, 'Lady');
+    const platformReturn = plot.addRoute(soldier, eastLine, 46, 'Platform NW', {labelDot: false});
+    const lady = plot.addRoute(platformReturn, 325, 19, 'Lady', {showLabel: false});
     const tub = plot.addRoute(lady, 0, 63, 'Tub');
 
     const pvcPipe = plot.addRoute(brynne, baseLine, 75, 'PVC Pipe');
     const westPlatform = plot.addRoute(pvcPipe, baseLine, 67, 'West Platform');
-    const westPlatformWest = plot.addRoute(westPlatform, 270, 10, '', {label: false});
+    const westPlatformWest = plot.addRoute(westPlatform, 270, 10, 'West Platform Far Corner', {showLabel: false, labelDot: false});
     const hoop = plot.addRoute(westPlatformWest, 315, 64, 'Hoop');
     const trash = plot.addRoute(hoop, 315, 50, 'Trash');
     const hoop2 = plot.addRoute(westPlatformWest, 335, 21, 'Hoop');
     const end = plot.addRoute(hoop2, 335, 113, 'End of the Line');
     const gocart = plot.addRoute(westPlatform, westLine, 56, 'Cart');
     const hoop3 = plot.addRoute(gocart, westLine, 19, 'Hoop');
-    const buddah2 = plot.addRoute(hoop3, westLine, 129);
+    const buddah2 = plot.addRoute(hoop3, westLine, 129, 'Buddah (return)', {labelDot: false});
 
     // Draw the East platform
     plot.addConnector(null, platformReturn);
