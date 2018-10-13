@@ -297,13 +297,14 @@ export class MapPlot {
     if (route instanceof Route) {
       route = route.id;
     }
+    this._routes.filter(r => r.previousId === route).forEach(r => this.deleteRoute(r));
     const index = this._routes.findIndex(r => r.id === route);
     if (index === -1) return;
     this._routes.splice(index, 1);
     for (let i = 0; i < this.connectors.length; i++) {
       const c = this.connectors[i];
       if (c.r1 === route || c.r2 === route) {
-        delete this.connectors[i];
+        this.connectors.splice(i, 1);
         i--;
       }
     }
