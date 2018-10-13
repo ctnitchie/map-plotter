@@ -116,6 +116,26 @@ export class Route implements PlotLine {
   }
 }
 
+export class RouteJoin implements PlotLine {
+  constructor(
+    public plot: MapPlot,
+    public r1: RouteId,
+    public r2: RouteId,
+    public opts: LineOpts
+  ) {}
+  
+  get startPoint(): Point {
+    if (!this.r1) {
+      return this.plot.startPoint;
+    }
+    return this.plot.routesById[this.r1].endPoint;
+  }
+
+  get endPoint(): Point {
+    return this.plot.routesById[this.r2].endPoint;
+  }
+}
+
 export function isSamePoint(p1: Point, p2: Point): boolean {
   return isSamePointLocation(p1, p2) && p1.label === p2.label;
 }
@@ -126,7 +146,7 @@ export function isSamePointLocation(p1: Point, p2: Point): boolean {
 
 export class MapPlot {
   readonly routesById: {[id: string]: Route} = {};
-  readonly connectors: PlotLine[] = [];
+  readonly connectors: RouteJoin[] = [];
   startLabel: string = 'Origin';
   readonly style: StyleOptions = {
     lineFont: '8pt sans-serif',
@@ -194,13 +214,9 @@ export class MapPlot {
     };
   }
 
-  addConnector(from: Point, to: Point, opts: LineOpts = {}): PlotLine {
+  addConnector(from: Route, to: Route, opts: LineOpts = {}): PlotLine {
     opts = {...{draw: true}, ...opts};
-    const route: PlotLine = {
-      startPoint: from,
-      endPoint: to,
-      opts
-    };
+    const route: RouteJoin = new RouteJoin(this, from ? from.id : null, to.id, opts);
     this.connectors.push(route);
     return route;
   }
@@ -221,5 +237,22 @@ export class MapPlot {
 
   draw(canvas: HTMLCanvasElement) {
     draw(this, canvas);
+  }
+
+  deleteRoute(route: RouteId | Route) {
+    if (route instanceof Route) {
+      route = route.id;
+    }
+    if (!route) {
+      return;
+    }
+    delete this.routesById[route];
+    for (let i = 0; i < this.connectors.length; i++) {
+      const c = this.connectors[i];
+      if (c.r1 === route || c.r2 === route) {
+        delete this.connectors[i];
+        i--;
+      }
+    }
   }
 }

@@ -87,7 +87,7 @@ window.addEventListener('DOMContentLoaded', function() {
     const buddah2 = plot.addRoute(hoop3, westLine, 129);
 
     // Draw the East platform
-    plot.addConnector(platform, platformReturn.endPoint);
+    plot.addConnector(null, platformReturn);
 
     return plot;
   }
