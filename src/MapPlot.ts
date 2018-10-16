@@ -41,10 +41,16 @@ export interface Bounds {
 type LabelCB = (l: PlotLine) => string;
 export const routeLabeler: LabelCB = (r: Route) => `${r.distance}' ${r.heading}°`;
 
+export enum LineType {
+  SOLID,
+  DASHED,
+  NONE
+}
+
 export interface LineOpts {
   label?: LabelCB,
   showLabel?: boolean,
-  draw?: boolean,
+  type?: LineType,
   makeDot?: boolean,
   labelDot?: boolean,
   highlighted?: boolean
@@ -52,7 +58,7 @@ export interface LineOpts {
 
 export const DFLT_LINE_OPTS: LineOpts = {
   showLabel: true,
-  draw: true,
+  type: LineType.SOLID,
   makeDot: true,
   labelDot: true,
   highlighted: false

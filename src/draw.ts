@@ -1,4 +1,4 @@
-import {MapPlot, Point, Bounds, PlotLine, LineOpts} from './MapPlot';
+import {MapPlot, Point, Bounds, PlotLine, LineOpts, LineType} from './MapPlot';
 
 function getDistance(p1: Point, p2: Point): number {
   const b = p2.x - p1.x;
@@ -106,7 +106,12 @@ export default function draw(plot: MapPlot, canvas: HTMLCanvasElement) {
   canvas.parentElement.style.backgroundColor = plot.style.background;
   
   const lines = plot.lines.map(adjust.line);
-  lines.filter(l => l.opts.draw).forEach(l => {
+  lines.filter(l => l.opts.type !== LineType.NONE).forEach(l => {
+    if (l.opts.type === LineType.DASHED) {
+      cxt.setLineDash([8, 6]);
+    } else {
+      cxt.setLineDash([]);
+    }
     cxt.beginPath();
     cxt.moveTo(l.p1.x, l.p1.y);
     cxt.lineTo(l.p2.x, l.p2.y);

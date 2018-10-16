@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Route, MapPlot } from '../MapPlot';
+import { Route, MapPlot, LineType } from '../MapPlot';
 import { ChangeListener } from './MapEditor';
 
 export interface RouteEditorProps {
@@ -7,6 +7,25 @@ export interface RouteEditorProps {
   routes: Route[];
   index: number;
   listener: ChangeListener
+}
+
+interface LineTypeSelectorProps {
+  type: LineType
+  onChange: (t: LineType) => void
+}
+
+function LineTypeSelector(props: LineTypeSelectorProps) {
+  function update(e: React.ChangeEvent<HTMLSelectElement>) {
+    console.log(e.target.value);
+    props.onChange(parseInt(e.target.value) as LineType);
+  }
+  return (
+    <select value={props.type} onChange={update}>
+      <option value={LineType.SOLID}>Solid</option>
+      <option value={LineType.DASHED}>Dashed</option>
+      <option value={LineType.NONE}>No Line</option>
+    </select>
+  );
 }
 
 export default function RouteEditor(props: RouteEditorProps) {
@@ -27,6 +46,7 @@ export default function RouteEditor(props: RouteEditorProps) {
 
   function updateOpt(key: string, val: any): void {
     const opts = {...route.opts, ...{[key]: val}};
+    console.log(opts);
     props.listener.onChange(route.mutate({opts}), props.index);
   }
 
@@ -79,11 +99,11 @@ export default function RouteEditor(props: RouteEditorProps) {
         </div>
         <div className="row" style={{marginTop: '4px'}}>
           <div className="col-8">
-            <input type="checkbox" checked={route.opts.draw}
-                onChange={e => updateOpt('draw', e.target.checked)}/> Draw Line
-            <input type="checkbox" checked={route.opts.draw && route.opts.showLabel}
+            Type: {' '}
+            <LineTypeSelector type={route.opts.type} onChange={t => updateOpt('type', t)}/>
+            <input type="checkbox" checked={route.opts.type !== LineType.NONE && route.opts.showLabel}
                 onChange={e => updateOpt('showLabel', e.target.checked)}
-                disabled={!route.opts.draw}/> Label Line
+                disabled={route.opts.type === LineType.NONE}/> Label Line
             <input type="checkbox" checked={route.opts.makeDot}
                 onChange={e => updateOpt('makeDot', e.target.checked)}/> Draw Dot
             <input type="checkbox" checked={route.opts.makeDot && route.opts.labelDot}
