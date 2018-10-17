@@ -1,8 +1,8 @@
 import { MapPlot, LineType } from "../MapPlot";
 
 const plot = new MapPlot();
-plot.startLabel = 'West Platform';
-plot.style.padding.right = 50;
+plot.startLabel = 'East Platform';
+plot.style.padding.right = 40;
 const baseLine = 250;
 const eastLine = 115;
 const westLine = 30;
@@ -13,6 +13,9 @@ const buddha = plot.addRoute(dino, 330, 51, 'SinkaBuddha');
 const david = plot.addRoute(buddha, eastLine, 70, 'David Point', {labelDot: false, makeDot: false});
 const soldier = plot.addRoute(david, eastLine, 58, 'Soldier Point', {labelDot: false, makeDot: false});
 const platformReturn = plot.addRoute(soldier, eastLine, 46, 'Platform NW', {labelDot: false});
+const platNE = plot.addRoute(platformReturn, 82, 16, '', {label: () => '', makeDot: false});
+const platSE = plot.addRoute(platNE, 172, 10, '', {label: () => '', makeDot: false});
+plot.addRoute(platSE, 262, 16, '', {label: () => '', makeDot: false});
 const lady = plot.addRoute(platformReturn, 325, 19, 'Lady', {showLabel: false});
 const dome = plot.addRoute(lady, 0, 63, 'Dome');
 plot.addRoute(dome, 145, 30, 'Mirror', {type: LineType.DASHED});
@@ -25,13 +28,28 @@ plot.addRoute(mid, 25, 10, 'HMCS Brynne', {type: LineType.NONE});
 
 const pvcPipe = plot.addRoute(mid, baseLine, 75, 'PVC Pipe');
 const westPlatform = plot.addRoute(pvcPipe, baseLine, 67, 'West Platform');
-const westPlatformWest = plot.addRoute(westPlatform, 270, 10, 'West Platform Far Corner', {showLabel: false, labelDot: false});
-const hoop = plot.addRoute(westPlatformWest, 315, 64, 'Hoop 2');
-const trash = plot.addRoute(hoop, 315, 50, 'Trash');
-const hoop2 = plot.addRoute(westPlatformWest, 335, 21, 'Hoop 1');
-const end = plot.addRoute(hoop2, 335, 113, 'End of the Line');
-const hoop3 = plot.addRoute(westPlatform, westLine, 75, 'Hoop 5');
-const buddah2 = plot.addRoute(hoop3, westLine, 129, 'Buddah (return)', {makeDot: false});
+const westPlatformWest = plot.addRoute(westPlatform, 270, 9, 'West Platform Far Corner', {showLabel: false, labelDot: false});
+const hoop1 = plot.addRoute(westPlatformWest, 315, 64, 'Hoop B');
+plot.addRoute(hoop1, 315, 50, 'Trash');
+const hoop2 = plot.addRoute(westPlatformWest, 335, 21, 'Hoop A');
+plot.addRoute(hoop2, 335, 113, 'End of the Line');
+const hoop3 = plot.addRoute(westPlatform, westLine, 67, 'Hoop D Line', {makeDot: false});
+plot.addRoute(hoop3, westLine, 139, 'Buddah (return)', {makeDot: false});
+
+const wpSW = plot.addRoute(westPlatformWest, 180, 9, 'West Platform SW', {makeDot: false, label: () => ''});
+const wpSE = plot.addRoute(wpSW, 90, 9, 'West Platform SE', {makeDot: false, label: () => ''});
+plot.addRoute(wpSE, 0, 9, 'West Platform NE', {makeDot: false, label: () => ''});
+
+plot.addRoute(hoop2, 305, 40, '', {makeDot: false, type: LineType.DASHED});
+const hoopC = plot.addRoute(hoop1, 35, 44, 'Hoop C', {type: LineType.DASHED});
+const hoopD = plot.addRoute(hoop3, 290, 5, 'Hoop D', {type: LineType.NONE});
+plot.addRoute(hoopC, 110, 57, '', {makeDot: false, type: LineType.DASHED});
+const hoopE = plot.addRoute(hoopD, 180, 39, 'Hoop E', {type: LineType.DASHED});
+plot.addRoute(hoopE, 270, 45, '', {type: LineType.DASHED, makeDot: false});
+
+const shelter = plot.addRoute(null, 160, 265, 'Shelter', {type: LineType.DASHED});
+const boat = plot.addRoute(shelter, 270, 122, 'Boat', {type: LineType.DASHED});
+plot.addRoute(boat, 265, 297, '', {type: LineType.DASHED});
 
 // Draw the East platform
 plot.addConnector(null, platformReturn);
