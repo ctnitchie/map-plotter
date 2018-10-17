@@ -27,6 +27,12 @@ export interface StyleOptions {
   highlight: string;
   lineWidth: number;
   highlightWidth: number;
+  padding: {
+    left: number;
+    right: number;
+    top: number;
+    bottom: number;
+  }
 }
 
 export interface Bounds {
@@ -85,7 +91,13 @@ export const DFLT_STYLE: StyleOptions = {
   background: '#adf',
   highlight: 'red',
   lineWidth: 1,
-  highlightWidth: 3
+  highlightWidth: 3,
+  padding: {
+    left: 5,
+    right: 20,
+    top: 5,
+    bottom: 5
+  }
 };
 
 export interface PlotLine {

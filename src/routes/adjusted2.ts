@@ -1,11 +1,12 @@
 import { MapPlot, LineType } from "../MapPlot";
 
 const plot = new MapPlot();
+plot.startLabel = 'West Platform';
+plot.style.padding.right = 50;
 const baseLine = 250;
 const eastLine = 115;
 const westLine = 30;
 
-const platform = plot.startPoint;
 const mid = plot.addRoute(null, baseLine, 134, 'Base Midpoint', {makeDot: false});
 const dino = plot.addRoute(mid, 355, 85, 'Scubasaurus');
 const buddha = plot.addRoute(dino, 330, 51, 'SinkaBuddha');

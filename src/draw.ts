@@ -46,11 +46,11 @@ interface Adjustor {
 }
 
 // Initiate the canvas and set up a function for point adjustment
-function setupCanvas(canvas: HTMLCanvasElement, bounds: Bounds): Adjustor {
-  const wPadding = [5, 20];
-  const hPadding = [5, 5];
+function setupCanvas(canvas: HTMLCanvasElement, plot: MapPlot): Adjustor {
+  const bounds = plot.bounds;
   const cvs = new Frame(canvas.offsetWidth, canvas.offsetHeight);
-  const img = new Frame(bounds.width + wPadding[0] + wPadding[1], bounds.height + hPadding[0] + hPadding[1]);
+  const img = new Frame(bounds.width + plot.style.padding.left + plot.style.padding.right,
+        bounds.height + plot.style.padding.top + plot.style.padding.bottom);
 
   canvas.width = cvs.w;
   canvas.height = cvs.h;
@@ -58,8 +58,8 @@ function setupCanvas(canvas: HTMLCanvasElement, bounds: Bounds): Adjustor {
   const isWider = img.widthRatio > cvs.widthRatio;
   const multiplier = isWider ? cvs.w / img.w : cvs.h / img.h;
 
-  const adjustX = (x: number) => ((x - bounds.bottomLeft.x) + wPadding[0]) * multiplier;
-  const adjustY = (y: number) => ((bounds.topRight.y - y) + hPadding[0]) * multiplier;
+  const adjustX = (x: number) => ((x - bounds.bottomLeft.x) + plot.style.padding.left) * multiplier;
+  const adjustY = (y: number) => ((bounds.topRight.y - y) + plot.style.padding.top) * multiplier;
   const adjustPoint = (p: Point) => {
     return {
       ...p,
@@ -99,7 +99,7 @@ function dot(plot: MapPlot, cxt: CanvasRenderingContext2D, p: Point, label: bool
 }
 
 export default function draw(plot: MapPlot, canvas: HTMLCanvasElement) {
-  const adjust = setupCanvas(canvas, plot.bounds);
+  const adjust = setupCanvas(canvas, plot);
   
   const cxt = canvas.getContext('2d');
   cxt.clearRect(0, 0, canvas.width, canvas.height);
