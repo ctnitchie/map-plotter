@@ -2,7 +2,6 @@ import './style.scss';
 import plot from './routes/adjusted2';
 import routeEditor, { ChangeListener } from './mapEditor/MapEditor';
 import { LineType } from './MapPlot';
-import { prependListener } from 'cluster';
 
 window.addEventListener('DOMContentLoaded', function() {
 
