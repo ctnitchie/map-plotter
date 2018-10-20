@@ -50,19 +50,19 @@ plot.addRoute(wpSE, 0, 9, '', {makeDot: false, label: nullLabeler});
 // Shelter routes
 const shelter = plot.addRoute(null, 160, 265, 'Shelter', {type: LineType.DASHED, labelDot: false, label: routeLabeler});
 const boat = plot.addRoute(shelter, 270, 122, 'Boat', {type: LineType.DASHED, labelDot: false, label: routeLabeler});
-plot.addRoute(boat, 265, 297, '', {type: LineType.DASHED, label: routeLabeler});
+plot.addRoute(boat, 265, 297, 'Beach Corner', {type: LineType.DASHED, label: routeLabeler});
 
 // Draw the East platform
 //plot.addConnector(null, platformReturn);
 
 export function hoopRoute(plot: MapPlot, from: Route, label: boolean): void {
   const lblFn = label ?routeLabeler : nullLabeler;
-  plot.addRoute(from, 305, 40, '', {makeDot: false, type: LineType.DASHED, label: lblFn});
+  plot.addRoute(from, 305, 40, 'Hoop B', {makeDot: false, type: LineType.DASHED, label: lblFn});
   const hoopC = plot.addRoute(hoop1, 35, 44, 'Hoop C', {type: LineType.DASHED, label: lblFn});
   const hoopD = plot.addRoute(hoop3, 290, 5, 'Hoop D', {type: LineType.NONE, label: lblFn});
-  plot.addRoute(hoopC, 110, 57, '', {makeDot: false, type: LineType.DASHED, label: lblFn});
+  plot.addRoute(hoopC, 110, 57, 'Hoop D', {makeDot: false, type: LineType.DASHED, label: lblFn});
   const hoopE = plot.addRoute(hoopD, 180, 39, 'Hoop E', {type: LineType.DASHED, label: lblFn});
-  plot.addRoute(hoopE, 270, 45, '', {type: LineType.DASHED, makeDot: false, label: lblFn});
+  plot.addRoute(hoopE, 270, 45, 'Hoop A', {type: LineType.DASHED, makeDot: false, label: lblFn});
 }
 
 export default plot;

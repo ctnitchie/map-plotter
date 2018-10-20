@@ -1,27 +1,43 @@
 import './style.scss';
 import plot from './routes/adjusted2';
 import routeEditor, { ChangeListener } from './mapEditor/MapEditor';
+import { LineType } from './MapPlot';
+import { prependListener } from 'cluster';
 
 window.addEventListener('DOMContentLoaded', function() {
 
   const canvas: HTMLCanvasElement = <HTMLCanvasElement> document.getElementById('canvas');
-  plot.draw(canvas);
+  const pre = document.getElementById('routes');
+  function render() {
+    plot.draw(canvas);
+    pre.innerHTML = '';
+    plot.routes.filter(r => r.opts.type !== LineType.NONE && r.endLabel)
+    .filter(r => !r.previousId || (r.previousId && r.previous.endLabel))
+    .forEach(r => {
+      const startPt = r.previousId ? r.previous.endLabel : plot.startLabel;
+      const txt = `${startPt} - ${r.endLabel}: ${r.heading}°, ${r.distance}'`;
+      pre.innerHTML += txt + '\n';
+    });
+  }
+
   const listener: ChangeListener = {
     onChange(r) {
       plot.updateRoute(r);
-      plot.draw(canvas);
+      render();
     },
 
     onAdd(r, i) {
       plot.addRouteObject(r, i);
-      plot.draw(canvas);
+      render();
     },
 
     onRemove(r) {
       plot.deleteRoute(r);
-      plot.draw(canvas);
+      render();
     }
   };
   routeEditor(plot, document.getElementById('editor'), listener);
-  window.addEventListener('resize', () => plot.draw(canvas), false);
+
+  render();
+  window.addEventListener('resize', () => render, false);
 });
