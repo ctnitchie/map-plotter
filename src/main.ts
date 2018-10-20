@@ -1,10 +1,21 @@
 import './style.scss';
-import plot from './routes/adjusted2';
+import plotFn from './routes/adjusted2';
 import routeEditor, { ChangeListener } from './mapEditor/MapEditor';
-import { LineType } from './MapPlot';
+import { LineType, MapData, MapPlot } from './MapPlot';
+
+function getPlot(): MapPlot {
+  //const data = localStorage.getItem('plotData');
+  let data = null;
+  if (data) {
+    const struct: MapData = JSON.parse(data);
+    return new MapPlot(struct);
+  } else {
+    return plotFn();
+  }
+}
 
 window.addEventListener('DOMContentLoaded', function() {
-
+  const plot = getPlot();
   const canvas: HTMLCanvasElement = <HTMLCanvasElement> document.getElementById('canvas');
   const pre = document.getElementById('routes');
   function render() {
@@ -17,6 +28,7 @@ window.addEventListener('DOMContentLoaded', function() {
       const txt = `${startPt} - ${r.endLabel}: ${r.heading}°, ${r.distance}'`;
       pre.innerHTML += txt + '\n';
     });
+    localStorage.setItem('plotData', JSON.stringify(plot.getData()));
   }
 
   const listener: ChangeListener = {

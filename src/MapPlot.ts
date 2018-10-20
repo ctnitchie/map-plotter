@@ -107,17 +107,30 @@ export interface PlotLine {
   readonly opts: LineOpts;
 }
 
+export interface RouteData {
+  previousId: RouteId,
+  heading: number,
+  distance: number,
+  endLabel?: string,
+  opts?: LineOpts,
+  id?: RouteId
+}
+
 export class Route implements PlotLine {
+  previousId: RouteId;
+  heading: number;
+  distance: number;
+  endLabel?: string;
+  opts: LineOpts;
+  id: RouteId;
+
   constructor(
     public plot: MapPlot,
-    public previousId: RouteId,
-    public heading: number,
-    public distance: number,
-    public endLabel?: string,
-    public opts: LineOpts = {},
-    public id: RouteId = nextId()
+    data: RouteData
   ) {
-    this.opts = {...DFLT_ROUTE_OPTS, ...opts};
+    Object.assign(this, data);
+    this.opts = {...DFLT_ROUTE_OPTS, ...data.opts, ...{highlighted: false}};
+    this.id = data.id || nextId();
   }
 
   isDescendantOf(r: Route | RouteId): boolean {
@@ -167,9 +180,19 @@ export class Route implements PlotLine {
     };
   }
 
+  getData(): RouteData {
+    return {
+      previousId: this.previousId,
+      heading: this.heading,
+      distance: this.distance,
+      endLabel: this.endLabel,
+      opts: this.opts,
+      id: this.id
+    };
+  }
+
   clone(): Route {
-    return new Route(this.plot, this.previousId, this.heading,
-        this.distance, this.endLabel, this.opts, this.id);
+    return new Route(this.plot, this.getData());
   }
 
   mutate(update: any): Route {
@@ -179,14 +202,22 @@ export class Route implements PlotLine {
   }
 }
 
+export interface ConnectorData {
+  r1: RouteId,
+  r2: RouteId,
+  opts: LineOpts
+}
+
 export class Connector implements PlotLine {
+  r1: RouteId;
+  r2: RouteId;
+  opts: LineOpts;
   constructor(
     public plot: MapPlot,
-    public r1: RouteId,
-    public r2: RouteId,
-    public opts: LineOpts
+    data: ConnectorData
   ) {
-    this.opts = {...DFLT_JOIN_OPTS, ...opts};
+    Object.assign(this, data);
+    this.opts = {...DFLT_JOIN_OPTS, ...data.opts, ...{highlighted: false}};
   }
   
   get startPoint(): Point {
@@ -211,7 +242,7 @@ export function isSamePointLocation(p1: Point, p2: Point): boolean {
 
 export interface MapData {
   startLabel: string;
-  _routes: Route[];
+  _routes: RouteData[];
   _connectors: Connector[];
   style: StyleOptions;
 }
@@ -231,6 +262,7 @@ export class MapPlot {
 
   constructor(data: MapData = EMPTY_PLOT) {
     Object.assign(this, data);
+    this._routes = data._routes.map(r => new Route(this, r));
   }
 
   get startPoint(): Point {
@@ -302,7 +334,7 @@ export class MapPlot {
 
   addConnector(from: Route, to: Route, opts: LineOpts = {}): PlotLine {
     opts = {...{draw: true}, ...opts};
-    const route: Connector = new Connector(this, from ? from.id : null, to.id, opts);
+    const route: Connector = new Connector(this, {r1: from ? from.id : null, r2: to.id, opts});
     this._connectors.push(route);
     return route;
   }
@@ -310,9 +342,9 @@ export class MapPlot {
   addRoute(previous: Route, heading: number, distance: number,
       endLabel: string = undefined, opts: LineOpts = {}): Route {
     
-    const prevId = previous ? previous.id : null;
-    const route = new Route(this, prevId, heading,
-        distance, endLabel, opts);
+    const previousId = previous ? previous.id : null;
+    const route = new Route(this, {previousId, heading,
+        distance, endLabel, opts, id: nextId()});
     this._routes.push(route);
     return route;
   }
@@ -351,5 +383,14 @@ export class MapPlot {
         i--;
       }
     }
+  }
+
+  getData(): MapData {
+    return {
+      startLabel: this.startLabel,
+      _connectors: this._connectors,
+      _routes: this._routes.map(r => r.getData()),
+      style: this.style
+    };
   }
 }

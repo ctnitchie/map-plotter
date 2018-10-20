@@ -49,7 +49,7 @@ export default function RouteEditor(props: RouteEditorProps) {
   }
 
   function addRoute() {
-    props.listener.onAdd(new Route(props.plot, route.id, 0, 0, ''), props.index + 1);
+    props.listener.onAdd(new Route(props.plot, {previousId: route.id, heading: 0, distance: 0, endLabel: ''}), props.index + 1);
   }
 
   function removeRoute() {
