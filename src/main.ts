@@ -4,8 +4,7 @@ import routeEditor, { ChangeListener } from './mapEditor/MapEditor';
 import { LineType, MapData, MapPlot } from './MapPlot';
 
 function getPlot(): MapPlot {
-  //const data = localStorage.getItem('plotData');
-  let data = null;
+  const data = localStorage.getItem('plotData');
   if (data) {
     const struct: MapData = JSON.parse(data);
     return new MapPlot(struct);
@@ -15,9 +14,10 @@ function getPlot(): MapPlot {
 }
 
 window.addEventListener('DOMContentLoaded', function() {
-  const plot = getPlot();
+  let plot = getPlot();
   const canvas: HTMLCanvasElement = <HTMLCanvasElement> document.getElementById('canvas');
   const pre = document.getElementById('routes');
+  
   function render() {
     plot.draw(canvas);
     pre.innerHTML = '';
@@ -32,6 +32,11 @@ window.addEventListener('DOMContentLoaded', function() {
   }
 
   const listener: ChangeListener = {
+    onStartPointChange(v) {
+      plot.startLabel = v;
+      render();
+    },
+
     onChange(r) {
       plot.updateRoute(r);
       render();
@@ -45,6 +50,19 @@ window.addEventListener('DOMContentLoaded', function() {
     onRemove(r) {
       plot.deleteRoute(r);
       render();
+    },
+
+    onReset() {
+      plot = plotFn();
+      render();
+      return plot;
+    },
+
+    onClear() {
+      plot = new MapPlot();
+      plot.addRoute(null, 0, 10, 'First Point');
+      render();
+      return plot;
     }
   };
   routeEditor(plot, document.getElementById('editor'), listener);
