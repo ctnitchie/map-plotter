@@ -82,10 +82,10 @@ export const DFLT_JOIN_OPTS: LineOpts = {
 };
 
 export const DFLT_STYLE: StyleOptions = {
-  lineFont: '12pt sans-serif',
+  lineFont: '8pt sans-serif',
   lines: 'white',
   lineLabels: 'red',
-  pointFont: '16pt sans-serif',
+  pointFont: '10pt sans-serif',
   pointRadius: 3,
   points: 'yellow',
   pointLabels: 'yellow',

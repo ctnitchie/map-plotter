@@ -16,7 +16,6 @@ interface LineTypeSelectorProps {
 
 function LineTypeSelector(props: LineTypeSelectorProps) {
   function update(e: React.ChangeEvent<HTMLSelectElement>) {
-    console.log(e.target.value);
     props.onChange(parseInt(e.target.value) as LineType);
   }
   return (
@@ -46,7 +45,6 @@ export default function RouteEditor(props: RouteEditorProps) {
 
   function updateOpt(key: string, val: any): void {
     const opts = {...route.opts, ...{[key]: val}};
-    console.log(opts);
     props.listener.onChange(route.mutate({opts}), props.index);
   }
 
