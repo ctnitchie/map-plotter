@@ -2,6 +2,7 @@ import * as a from './actions';
 import { EMPTY_PLOT, MapData, RouteData, StyleOptions } from '../MapPlot';
 import { Action, PayloadAction } from './actionlib';
 import {combineReducers} from 'redux';
+import { removeWithDescendants } from './routeUtils';
 
 export interface UIState {}
 
@@ -10,7 +11,7 @@ export interface State {
   readonly uistate: UIState
 }
 
-function arrmod<T>(arr: T[], index: number, count: number, add?: T) {
+function arrmod<T>(arr: T[], index: number, count: number, add?: T): T[] {
   const narr = [...arr];
   narr.splice(index, count, add);
   return narr;
@@ -30,7 +31,7 @@ export default combineReducers({
         case a.addRoute.getType():
           return arrmod(state, action.payload.index, 0, action.payload.route);
         case a.removeRoute.getType():
-          return arrmod(state, action.payload.index, 1);
+          return removeWithDescendants(state, action.payload.route);
         case a.updateRoute.getType():
           return arrmod(state, action.payload.index, 1, action.payload.route);
       }

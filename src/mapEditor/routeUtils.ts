@@ -86,3 +86,19 @@ export function getEndLabel(arr: RouteData[], r: RouteData): string {
 export function toString(p: Point): string {
   return p.label || `(${p.x}, ${p.y})`;
 }
+
+export function removeWithDescendants(arr: RouteData[], r: RouteData): RouteData[] {
+  let narr = [...arr];
+  const toRemove = [r.id];
+  while (toRemove.length > 0) {
+    const curId = toRemove.pop();
+    narr = narr.filter(re => {
+      if (re.previousId === curId) {
+        toRemove.push(re.id);
+        return false;
+      }
+      return re.id !== curId;
+    });
+  }
+  return narr;
+}
