@@ -202,36 +202,6 @@ export class Route implements PlotLine {
   }
 }
 
-export interface ConnectorData {
-  r1: RouteId,
-  r2: RouteId,
-  opts: LineOpts
-}
-
-export class Connector implements PlotLine {
-  r1: RouteId;
-  r2: RouteId;
-  opts: LineOpts;
-  constructor(
-    public plot: MapPlot,
-    data: ConnectorData
-  ) {
-    Object.assign(this, data);
-    this.opts = {...DFLT_JOIN_OPTS, ...data.opts, ...{highlighted: false}};
-  }
-  
-  get startPoint(): Point {
-    if (!this.r1) {
-      return this.plot.startPoint;
-    }
-    return this.plot.route(this.r1).endPoint;
-  }
-
-  get endPoint(): Point {
-    return this.plot.route(this.r2).endPoint;
-  }
-}
-
 export function isSamePoint(p1: Point, p2: Point): boolean {
   return isSamePointLocation(p1, p2) && p1.label === p2.label;
 }
@@ -243,21 +213,18 @@ export function isSamePointLocation(p1: Point, p2: Point): boolean {
 export interface MapData {
   startLabel: string;
   _routes: RouteData[];
-  _connectors: Connector[];
   style: StyleOptions;
 }
 
 const EMPTY_PLOT: MapData = {
   startLabel: 'Origin',
   _routes: [],
-  _connectors: [],
   style: DFLT_STYLE
 };
 
 export class MapPlot {
   startLabel: string;
   private readonly _routes: Route[];
-  private readonly _connectors: Connector[];
   public readonly style: StyleOptions;
 
   constructor(data: MapData = EMPTY_PLOT) {
@@ -277,10 +244,6 @@ export class MapPlot {
     return [...this._routes];
   }
 
-  get connectors(): Connector[] {
-    return [...this._connectors];
-  }
-
   updateRoute(r: Route): void {
     const index = this._routes.findIndex(rt => rt.id === r.id);
     if (index === -1) {
@@ -295,7 +258,7 @@ export class MapPlot {
   }
 
   get lines(): PlotLine[] {
-    return [...this._routes, ...this._connectors];
+    return [...this._routes];
   }
 
   get bounds(): Bounds {
@@ -330,13 +293,6 @@ export class MapPlot {
       width: maxX - minX,
       height: maxY - minY
     };
-  }
-
-  addConnector(from: Route, to: Route, opts: LineOpts = {}): PlotLine {
-    opts = {...{draw: true}, ...opts};
-    const route: Connector = new Connector(this, {r1: from ? from.id : null, r2: to.id, opts});
-    this._connectors.push(route);
-    return route;
   }
 
   addRoute(previous: Route, heading: number, distance: number,
@@ -376,19 +332,11 @@ export class MapPlot {
     const index = this._routes.findIndex(r => r.id === route);
     if (index === -1) return;
     this._routes.splice(index, 1);
-    for (let i = 0; i < this._connectors.length; i++) {
-      const c = this._connectors[i];
-      if (c.r1 === route || c.r2 === route) {
-        this._connectors.splice(i, 1);
-        i--;
-      }
-    }
   }
 
   getData(): MapData {
     return {
       startLabel: this.startLabel,
-      _connectors: this._connectors,
       _routes: this._routes.map(r => r.getData()),
       style: this.style
     };
