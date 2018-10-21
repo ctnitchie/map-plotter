@@ -1,13 +1,14 @@
 import * as React from 'react';
-import { MapPlot, Route, LineType } from '../MapPlot';
+import { RouteData, MapData, LineType } from '../MapPlot';
+import { getStartLabel, getEndLabel, previous } from './routeUtils';
 
 export interface RouteListsProps {
-  plot: MapPlot;
+  map: MapData
 }
 
 interface RouteLineProps {
-  plot: MapPlot;
-  line: Route;
+  map: MapData,
+  line: RouteData;
   reverse?: boolean;
 }
 
@@ -19,13 +20,14 @@ function invert(heading: number): number {
   return n;
 }
 
-function RouteLine(props: RouteLineProps) {
-  const startLbl = props.line.previousId ? props.line.previous.endLabel : props.plot.startLabel;
+function RouteLine({line, map, reverse}: RouteLineProps) {
+  const startLbl = line.previousId ? getStartLabel(map.routes, line) : map.startLabel;
+  const endLbl = getEndLabel(map.routes, line);
   let lbl;
-  if (props.reverse) {
-    lbl = `${props.line.endLabel} - ${startLbl}: ${invert(props.line.heading)}°, ${props.line.distance}'\n`;
+  if (reverse) {
+    lbl = `${endLbl} - ${startLbl}: ${invert(line.heading)}°, ${line.distance}'\n`;
   } else {
-    lbl = `${startLbl} - ${props.line.endLabel}: ${props.line.heading}°, ${props.line.distance}'\n`;
+    lbl = `${startLbl} - ${endLbl}: ${line.heading}°, ${line.distance}'\n`;
   }
   return (
     <code>
@@ -34,25 +36,29 @@ function RouteLine(props: RouteLineProps) {
   )
 }
 
-function shouldList(r: Route) {
-  return r.opts.type!== LineType.NONE && r.endLabel && (!r.previousId || (r.previousId && r.previous.endLabel));
+function shouldList(arr: RouteData[], r: RouteData) {
+  if (r.opts.type === LineType.NONE || !r.endLabel) {
+    return false;
+  }
+  const prev = previous(arr, r);
+  return !prev || prev.endLabel;
 }
 
-export default function(props: RouteListsProps) {
-  const routes = props.plot.routes.filter(shouldList);
+export default function({map}: RouteListsProps) {
+  const routes = map.routes.filter(r => shouldList(map.routes, r));
   return (
     <div className="row">
       <div className="col-12 col-md-6">
         <pre>
           {routes.map(r => (
-            <RouteLine key={r.id} plot={props.plot} line={r}/>
+            <RouteLine key={r.id} map={map} line={r}/>
           ))}
         </pre>
       </div>
       <div className="col-12 col-md-6">
         <pre>
           {routes.map(r => (
-            <RouteLine key={r.id} plot={props.plot} line={r} reverse={true}/>
+            <RouteLine key={r.id} map={map} line={r} reverse={true}/>
           ))}
         </pre>
     </div>

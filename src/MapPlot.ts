@@ -216,7 +216,7 @@ export interface MapData {
   style: StyleOptions;
 }
 
-const EMPTY_PLOT: MapData = {
+export const EMPTY_PLOT: MapData = {
   startLabel: 'Origin',
   routes: [],
   style: DFLT_STYLE

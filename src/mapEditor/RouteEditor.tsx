@@ -1,13 +1,9 @@
 import * as React from 'react';
-import { Route, MapPlot, LineType } from '../MapPlot';
-import { ChangeListener } from './MapEditor';
-
-export interface RouteEditorProps {
-  plot: MapPlot;
-  routes: Route[];
-  index: number;
-  listener: ChangeListener
-}
+import { RouteData, LineType, MapData } from '../MapPlot';
+import { RouteListener } from './MapEditor';
+import { Dispatch } from 'redux';
+import { State } from './reducers';
+import { isDescendant, isDescendantOrSelf, getEndLabel } from './routeUtils';
 
 interface LineTypeSelectorProps {
   type: LineType
@@ -27,34 +23,58 @@ function LineTypeSelector(props: LineTypeSelectorProps) {
   );
 }
 
-export default function RouteEditor(props: RouteEditorProps) {
-  const route: Route = props.routes[props.index];
-  const nonContiguous = route.previousId && props.index > 0 && props.routes[props.index - 1].id !== route.previousId;
+
+
+
+interface RouteEditorProps {
+  map: MapData,
+  route: RouteData,
+  index: number,
+  listener: RouteListener
+}
+
+const NULL_START_ID = '--start--';
+
+export default function RouteEditor({route, index, listener, map: {startLabel, routes}}: RouteEditorProps) {
+  const nonContiguous = route.previousId && index > 0 && routes[index - 1].id !== route.previousId;
 
   function onSourceChange(e: React.ChangeEvent<HTMLSelectElement>) {
     const newId = e.target.value;
-    const newRoute = route.mutate({previousId: newId === '--start--' ? null : newId});
-    props.listener.onChange(newRoute, props.index);
+    const newRoute = {...route, previousId: newId === NULL_START_ID ? null : newId};
+    listener.onUpdate(newRoute, index);
   }
 
   function updateRoute(e: React.ChangeEvent<HTMLInputElement>, prop: string, num: boolean = false) {
     let v = num ? parseInt(e.target.value) : e.target.value;
     if (num && isNaN(v as number)) v = null;
-    props.listener.onChange(route.mutate({[prop]: v}), props.index);
+    listener.onUpdate({...route, [prop]: v}, index);
   }
 
   function updateOpt(key: string, val: any): void {
     const opts = {...route.opts, ...{[key]: val}};
-    props.listener.onChange(route.mutate({opts}), props.index);
+    listener.onUpdate({...route, opts}, index);
   }
 
   function addRoute() {
-    props.listener.onAdd(new Route(props.plot, {previousId: route.id, heading: 0, distance: 0, endLabel: ''}), props.index + 1);
+    listener.onAdd({previousId: route.id, heading: 0, distance: 0, endLabel: ''}, index + 1);
   }
 
   function removeRoute() {
-    props.listener.onRemove(route, props.index);
+    listener.onRemove(route, index);
   }
+
+  const parentOpts = [
+    {
+      id: NULL_START_ID,
+      label: startLabel
+    },
+    ...routes.filter(r => !isDescendantOrSelf(routes, r, route)).map(r => {
+      return {
+        label: getEndLabel(routes, r),
+        id: r.id
+      };
+    })
+  ];
 
   return (
     <div className={`pointConfig card ${nonContiguous ? 'noncontiguous' : ''} ${route.opts.highlighted ? 'highlighted' : ''}`}
@@ -67,11 +87,8 @@ export default function RouteEditor(props: RouteEditorProps) {
             <select onChange={e => onSourceChange(e)}
                 value={route.previousId || '--start--'}
                 style={{width: '100%'}}>
-              <option value="--start--">{props.plot.startLabel}</option>
-              {props.routes.filter(r => !r.isDescendantOfOrSelf(route)).map(r => (
-                <option key={r.id} value={r.id}>
-                  {r.endLabel || `(${Math.round(r.endPoint.x)}, ${Math.round(r.endPoint.y)})`}
-                </option>
+              {parentOpts.map(p => (
+                <option key={p.id} value={p.id}>{p.label}</option>
               ))}
             </select>
           </div>
@@ -117,3 +134,4 @@ export default function RouteEditor(props: RouteEditorProps) {
     </div>
   );
 }
+
