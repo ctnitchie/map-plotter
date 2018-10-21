@@ -4,6 +4,7 @@ import * as ReactDOM from 'react-dom';
 
 import RouteEditor from './RouteEditor';
 import { MapPlot, Route } from '../MapPlot';
+import RouteLists from './RouteLists';
 
 export interface ChangeListener {
   onChange?: (route: Route, index: number) => void;
@@ -116,6 +117,7 @@ export class RouteUI extends React.Component<RouteUIProps, UIState> {
                 index={i} routes={this.state.routes}/> 
           ))}
         </div>
+        <RouteLists plot={this.state.plot}/>
       </div>
     );
   }

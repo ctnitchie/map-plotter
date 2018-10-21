@@ -16,18 +16,18 @@ export interface Point {
 }
 
 export interface StyleOptions {
-  lineFont: string;
-  lines: string;
-  lineLabels: string;
-  pointFont: string;
-  pointRadius: number;
-  points: string;
-  pointLabels: string;
-  background: string;
-  highlight: string;
-  lineWidth: number;
-  highlightWidth: number;
-  padding: {
+  lineFont?: string;
+  lines?: string;
+  lineLabels?: string;
+  pointFont?: string;
+  pointRadius?: number;
+  points?: string;
+  pointLabels?: string;
+  background?: string;
+  highlight?: string;
+  lineWidth?: number;
+  highlightWidth?: number;
+  padding?: {
     left: number;
     right: number;
     top: number;
@@ -212,13 +212,13 @@ export function isSamePointLocation(p1: Point, p2: Point): boolean {
 
 export interface MapData {
   startLabel: string;
-  _routes: RouteData[];
+  routes: RouteData[];
   style: StyleOptions;
 }
 
 const EMPTY_PLOT: MapData = {
   startLabel: 'Origin',
-  _routes: [],
+  routes: [],
   style: DFLT_STYLE
 };
 
@@ -228,8 +228,9 @@ export class MapPlot {
   public readonly style: StyleOptions;
 
   constructor(data: MapData = EMPTY_PLOT) {
-    Object.assign(this, data);
-    this._routes = data._routes.map(r => new Route(this, r));
+    this.startLabel = data.startLabel;
+    this.style = {...DFLT_STYLE, ...data.style};
+    this._routes = data.routes.map(r => new Route(this, r));
   }
 
   get startPoint(): Point {
@@ -297,7 +298,7 @@ export class MapPlot {
 
   addRoute(previous: Route, heading: number, distance: number,
       endLabel: string = undefined, opts: LineOpts = {}): Route {
-    
+
     const previousId = previous ? previous.id : null;
     const route = new Route(this, {previousId, heading,
         distance, endLabel, opts, id: nextId()});
@@ -337,8 +338,12 @@ export class MapPlot {
   getData(): MapData {
     return {
       startLabel: this.startLabel,
-      _routes: this._routes.map(r => r.getData()),
+      routes: this._routes.map(r => r.getData()),
       style: this.style
     };
+  }
+
+  clone(): MapPlot {
+    return new MapPlot(this.getData());
   }
 }

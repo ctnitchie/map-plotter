@@ -3,7 +3,7 @@ import plotFn from './routes/adjusted2';
 import routeEditor, { ChangeListener } from './mapEditor/MapEditor';
 import { LineType, MapData, MapPlot } from './MapPlot';
 
-function getPlot(): MapPlot {
+function loadPlot(): MapPlot {
   const data = localStorage.getItem('plotData');
   if (data) {
     const struct: MapData = JSON.parse(data);
@@ -14,21 +14,25 @@ function getPlot(): MapPlot {
 }
 
 window.addEventListener('DOMContentLoaded', function() {
-  let plot = getPlot();
-  const canvas: HTMLCanvasElement = <HTMLCanvasElement> document.getElementById('canvas');
-  const pre = document.getElementById('routes');
-  
+  let plot = loadPlot();
+  const canvas: HTMLCanvasElement = document.getElementById('canvas') as HTMLCanvasElement;
+  const pre1 = document.getElementById('routes');
+  const pre2 = document.getElementById('routes2');
+
   function render() {
     plot.draw(canvas);
-    pre.innerHTML = '';
+/*    pre1.innerHTML = '';
+    pre2.innerHTML = '';
     plot.routes.filter(r => r.opts.type !== LineType.NONE && r.endLabel)
     .filter(r => !r.previousId || (r.previousId && r.previous.endLabel))
     .forEach(r => {
       const startPt = r.previousId ? r.previous.endLabel : plot.startLabel;
-      const txt = `${startPt} - ${r.endLabel}: ${r.heading}°, ${r.distance}'`;
-      pre.innerHTML += txt + '\n';
-    });
-    localStorage.setItem('plotData', JSON.stringify(plot.getData()));
+      let txt = `${startPt} - ${r.endLabel}: ${r.heading}°, ${r.distance}'`;
+      pre1.innerHTML += txt + '\n';
+      txt = `${r.endLabel} - ${startPt}: ${adjust(r.heading)}°, ${r.distance}'`;
+      pre2.innerHTML += txt + '\n';
+    });*/
+    //localStorage.setItem('plotData', JSON.stringify(plot.getData()));
   }
 
   const listener: ChangeListener = {
