@@ -1,5 +1,5 @@
 import { Point, Bounds, LineOpts, LineType, MapData, RouteData} from './MapPlot';
-import { getBounds, startPoint, endPoint, getEndLabel } from './mapEditor/routeUtils';
+import { getBounds, startPoint, endPoint, getEndLabel, getLineLabel } from './mapEditor/routeUtils';
 
 function getDistance(p1: Point, p2: Point): number {
   const b = p2.x - p1.x;
@@ -71,13 +71,12 @@ function setupCanvas(canvas: HTMLCanvasElement, plot: MapData): Adjustor {
   const adjustLine = (l: RouteData) => {
     const start = startPoint(plot.routes, l);
     const end = endPoint(plot.routes, l);
-    const lbl: string = l.opts.label === false ? null : (typeof l.opts.label === 'string' ? l.opts.label : `${l.heading}°, ${l.distance}'`);
     return <AdjustedLine> {
       p1: adjustPoint(start),
       p2: adjustPoint(end),
       length: Math.round(getDistance(start, end)),
       halfPoint: adjustPoint(getMidpoint(start, end)),
-      label: l.opts.showLabel ? lbl : null,
+      label: getLineLabel(l),
       opts: l.opts
     };
   };

@@ -53,8 +53,8 @@ export enum LineType {
 }
 
 export interface LineOpts {
-  label?: string | boolean,
-  showLabel?: boolean,
+  label?: boolean,
+  customLabel?: string,
   type?: LineType,
   makeDot?: boolean,
   labelDot?: boolean,
@@ -62,7 +62,7 @@ export interface LineOpts {
 }
 
 export const DFLT_LINE_OPTS: LineOpts = {
-  showLabel: true,
+  label: true,
   type: LineType.SOLID,
   makeDot: true,
   labelDot: true,

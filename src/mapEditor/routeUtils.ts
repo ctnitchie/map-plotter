@@ -80,10 +80,10 @@ export function getStartLabel(arr: RouteData[], r: RouteData): string {
 }
 
 export function getLineLabel(r: RouteData): string {
-  if (r.opts.label === true) {
-    return `${r.heading}° ${r.distance}'`;
+  if (r.opts.label) {
+    return r.opts.customLabel || `${r.heading}° ${r.distance}'`;
   }
-  return r.opts.label as string;
+  return null;
 }
 
 export function getEndLabel(arr: RouteData[], r: RouteData): string {

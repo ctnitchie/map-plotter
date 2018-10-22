@@ -116,8 +116,8 @@ export default function RouteEditor({route, index, listener, map: {startLabel, r
           <div className="col-8">
             Type: {' '}
             <LineTypeSelector type={route.opts.type} onChange={t => updateOpt('type', t)}/>
-            <input type="checkbox" checked={route.opts.type !== LineType.NONE && route.opts.showLabel}
-                onChange={e => updateOpt('showLabel', e.target.checked)}
+            <input type="checkbox" checked={route.opts.type !== LineType.NONE && route.opts.label as boolean}
+                onChange={e => updateOpt('label', e.target.checked)}
                 disabled={route.opts.type === LineType.NONE}/> Label Line
             <input type="checkbox" checked={route.opts.makeDot}
                 onChange={e => updateOpt('makeDot', e.target.checked)}/> Draw Dot
