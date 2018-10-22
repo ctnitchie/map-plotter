@@ -5,7 +5,6 @@ import {connect} from 'react-redux';
 
 import RouteEditor from './RouteEditor';
 import { RouteData } from '../MapPlot';
-import RouteLists from './RouteLists';
 
 import { State } from './reducers';
 import { clear, reset, setStartLabel, addRoute, removeRoute, updateRoute } from './actions';
@@ -44,7 +43,6 @@ export function EditControls(props: EditControlsProps) {
           <RouteEditor key={r.id} index={i} route={r} map={props.data} listener={props.routeListener}/>
         ))}
       </div>
-      <RouteLists map={props.data}/>
     </div>
   );
 }

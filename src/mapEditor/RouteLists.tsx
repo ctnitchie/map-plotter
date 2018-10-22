@@ -1,6 +1,8 @@
 import * as React from 'react';
 import { RouteData, MapData, LineType } from '../MapPlot';
 import { getStartLabel, getEndLabel, previous } from './routeUtils';
+import { State } from './reducers';
+import { connect } from 'react-redux';
 
 export interface RouteListsProps {
   map: MapData
@@ -44,7 +46,7 @@ function shouldList(arr: RouteData[], r: RouteData) {
   return !prev || prev.endLabel;
 }
 
-export default function({map}: RouteListsProps) {
+function RouteLists({map}: RouteListsProps) {
   const routes = map.routes.filter(r => shouldList(map.routes, r));
   return (
     <div className="row">
@@ -65,3 +67,9 @@ export default function({map}: RouteListsProps) {
   </div>
   );
 }
+
+function mapStateToProps(state: State, ownProps: {}): RouteListsProps {
+  return {map: state.data};
+}
+
+export default connect(mapStateToProps)(RouteLists);
