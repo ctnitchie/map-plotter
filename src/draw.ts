@@ -52,7 +52,7 @@ function setupCanvas(canvas: HTMLCanvasElement, plot: MapData): Adjustor {
   const cvs = new Frame(canvas.offsetWidth, canvas.offsetHeight);
   const img = new Frame(bounds.width + plot.style.padding.left + plot.style.padding.right,
         bounds.height + plot.style.padding.top + plot.style.padding.bottom);
-
+  
   canvas.width = cvs.w;
   canvas.height = cvs.h;
 
@@ -71,7 +71,7 @@ function setupCanvas(canvas: HTMLCanvasElement, plot: MapData): Adjustor {
   const adjustLine = (l: RouteData) => {
     const start = startPoint(plot.routes, l);
     const end = endPoint(plot.routes, l);
-    const lbl = getEndLabel(plot.routes, l);
+    const lbl: string = l.opts.label === false ? null : (typeof l.opts.label === 'string' ? l.opts.label : `${l.heading}°, ${l.distance}'`);
     return <AdjustedLine> {
       p1: adjustPoint(start),
       p2: adjustPoint(end),

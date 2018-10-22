@@ -4,6 +4,7 @@ import { Provider } from 'react-redux';
 
 import {store} from './store';
 import { ConnectedEditControls } from './MapEditor';
+import { ConnectedRenderedMap } from './CanvasRenderer';
 
 function MainUI() {
   return (
@@ -15,10 +16,11 @@ function MainUI() {
       </div>
       <Provider store={store}>
         <div className="row">
-          <div className="col-7">
+          <div className="col-12 col-sm-7">
             {/* TODO: Canvas goes here. */}
+            <ConnectedRenderedMap/>
           </div>
-          <div className="col-5" id="editor">
+          <div className="col-12 col-sm-5" id="editor">
             <ConnectedEditControls/>
           </div>
         </div>

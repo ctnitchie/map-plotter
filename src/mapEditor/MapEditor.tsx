@@ -49,11 +49,11 @@ export function EditControls(props: EditControlsProps) {
   );
 }
 
-function mapStateToProps(state: State, ownProps: {}): State {
+function mapStateToProps(state: State): State {
   return {...state};
 }
 
-function mapDispatchToProps(dispatch: Dispatch, ownProps: {}): MapListener {
+function mapDispatchToProps(dispatch: Dispatch): MapListener {
   return {
     onClear: () => dispatch(clear()),
     onReset: () => dispatch(reset()),
