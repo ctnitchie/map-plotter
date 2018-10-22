@@ -18,7 +18,9 @@ function MainUI() {
       </div>
         <div className="row">
           <div className="col-12 col-sm-7">
-            <ConnectedRenderedMap/>
+            <div>
+              <ConnectedRenderedMap/>
+            </div>
           </div>
           <div className="col-12 col-sm-5" id="editor">
             <ConnectedEditControls/>
