@@ -1,4 +1,5 @@
-import {MapPlot, Point, Bounds, PlotLine, LineOpts, LineType} from './MapPlot';
+import { Point, Bounds, LineOpts, LineType, MapData, RouteData} from './MapPlot';
+import { getBounds, startPoint, endPoint, getEndLabel } from './mapEditor/routeUtils';
 
 function getDistance(p1: Point, p2: Point): number {
   const b = p2.x - p1.x;
@@ -42,12 +43,12 @@ interface AdjustedLine {
 
 interface Adjustor {
   point: (p: Point) => Point;
-  line: (r: PlotLine) => AdjustedLine;
+  line: (r: RouteData) => AdjustedLine;
 }
 
 // Initiate the canvas and set up a function for point adjustment
-function setupCanvas(canvas: HTMLCanvasElement, plot: MapPlot): Adjustor {
-  const bounds = plot.bounds;
+function setupCanvas(canvas: HTMLCanvasElement, plot: MapData): Adjustor {
+  const bounds = getBounds(plot.routes);
   const cvs = new Frame(canvas.offsetWidth, canvas.offsetHeight);
   const img = new Frame(bounds.width + plot.style.padding.left + plot.style.padding.right,
         bounds.height + plot.style.padding.top + plot.style.padding.bottom);
@@ -67,14 +68,15 @@ function setupCanvas(canvas: HTMLCanvasElement, plot: MapPlot): Adjustor {
       y: adjustY(p.y)
     };
   };
-  const adjustLine = (l: PlotLine) => {
-    const {startPoint, endPoint} = l;
-    let lbl = l.opts.label ? l.opts.label(l) : null;
+  const adjustLine = (l: RouteData) => {
+    const start = startPoint(plot.routes, l);
+    const end = endPoint(plot.routes, l);
+    const lbl = getEndLabel(plot.routes, l);
     return <AdjustedLine> {
-      p1: adjustPoint(startPoint),
-      p2: adjustPoint(endPoint),
-      length: Math.round(getDistance(startPoint, endPoint)),
-      halfPoint: adjustPoint(getMidpoint(startPoint, endPoint)),
+      p1: adjustPoint(start),
+      p2: adjustPoint(end),
+      length: Math.round(getDistance(start, end)),
+      halfPoint: adjustPoint(getMidpoint(start, end)),
       label: l.opts.showLabel ? lbl : null,
       opts: l.opts
     };
@@ -85,7 +87,7 @@ function setupCanvas(canvas: HTMLCanvasElement, plot: MapPlot): Adjustor {
   };
 }
 
-function dot(plot: MapPlot, cxt: CanvasRenderingContext2D, p: Point, label: boolean) {
+function dot(plot: MapData, cxt: CanvasRenderingContext2D, p: Point, label: boolean) {
   cxt.beginPath();
   cxt.arc(p.x, p.y, plot.style.pointRadius, 0, 2 * Math.PI);
   cxt.fillStyle = plot.style.points;
@@ -98,14 +100,14 @@ function dot(plot: MapPlot, cxt: CanvasRenderingContext2D, p: Point, label: bool
   }
 }
 
-export default function draw(plot: MapPlot, canvas: HTMLCanvasElement) {
+export default function draw(plot: MapData, canvas: HTMLCanvasElement) {
   const adjust = setupCanvas(canvas, plot);
   
   const cxt = canvas.getContext('2d');
   cxt.clearRect(0, 0, canvas.width, canvas.height);
   canvas.parentElement.style.backgroundColor = plot.style.background;
   
-  const lines = plot.lines.map(adjust.line);
+  const lines = plot.routes.map(adjust.line);
   lines.filter(l => l.opts.type !== LineType.NONE).forEach(l => {
     if (l.opts.type === LineType.DASHED) {
       cxt.setLineDash([8, 6]);
@@ -125,7 +127,7 @@ export default function draw(plot: MapPlot, canvas: HTMLCanvasElement) {
     }
   });
 
-  dot(plot, cxt, adjust.point(plot.startPoint), true);
+  dot(plot, cxt, adjust.point({x: 0, y: 0}), true);
   lines.filter(l => l.opts.makeDot).forEach(l => {
     dot(plot, cxt, l.p2, l.opts.labelDot);
   });

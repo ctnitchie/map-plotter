@@ -1,4 +1,4 @@
-import { RouteData, Point } from '../MapPlot';
+import { RouteData, Point, Bounds } from '../MapPlot';
 
 /**
  * Gets the route ID when you don't know whether you have a route or a route ID.
@@ -79,6 +79,13 @@ export function getStartLabel(arr: RouteData[], r: RouteData): string {
   return prev ? getEndLabel(arr, prev) : null;
 }
 
+export function getLineLabel(r: RouteData): string {
+  if (r.opts.label === true) {
+    return `${r.heading}° ${r.distance}'`;
+  }
+  return r.opts.label as string;
+}
+
 export function getEndLabel(arr: RouteData[], r: RouteData): string {
   return r.endLabel || toString(endPoint(arr, r));
 }
@@ -101,4 +108,38 @@ export function removeWithDescendants(arr: RouteData[], r: RouteData): RouteData
     });
   }
   return narr;
+}
+
+export function getBounds(routes: RouteData[]): Bounds {
+  let minX = 0;
+  let maxX = 10;
+  let minY = 0;
+  let maxY = 10;
+  routes.forEach(r => {
+    const p = endPoint(routes, r);
+    minX = Math.min(p.x, minX);
+    minY = Math.min(p.y, minY);
+    maxX = Math.max(p.x, maxX);
+    maxY = Math.max(p.y, maxY);
+  });
+  return {
+    bottomLeft: {
+      x: minX,
+      y: minY
+    },
+    bottomRight: {
+      x: maxX,
+      y: minY
+    },
+    topLeft: {
+      x: minX,
+      y: maxY
+    },
+    topRight: {
+      x: maxX,
+      y: maxY
+    },
+    width: maxX - minX,
+    height: maxY - minY
+  };
 }
