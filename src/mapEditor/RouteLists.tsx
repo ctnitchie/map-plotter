@@ -5,7 +5,8 @@ import { State } from './reducers';
 import { connect } from 'react-redux';
 
 export interface RouteListsProps {
-  map: MapData
+  map: MapData,
+  filteredRoutes: RouteData[]
 }
 
 interface RouteLineProps {
@@ -46,20 +47,19 @@ function shouldList(arr: RouteData[], r: RouteData) {
   return !prev || prev.endLabel;
 }
 
-function RouteLists({map}: RouteListsProps) {
-  const routes = map.routes.filter(r => shouldList(map.routes, r));
+function RouteLists({map, filteredRoutes}: RouteListsProps) {
   return (
     <div className="row">
       <div className="col-12 col-md-6">
         <pre>
-          {routes.map(r => (
+          {filteredRoutes.map(r => (
             <RouteLine key={r.id} map={map} line={r}/>
           ))}
         </pre>
       </div>
       <div className="col-12 col-md-6">
         <pre>
-          {routes.map(r => (
+          {filteredRoutes.map(r => (
             <RouteLine key={r.id} map={map} line={r} reverse={true}/>
           ))}
         </pre>
@@ -69,7 +69,7 @@ function RouteLists({map}: RouteListsProps) {
 }
 
 function mapStateToProps(state: State, ownProps: {}): RouteListsProps {
-  return {map: state.data};
+  return {map: state.data, filteredRoutes: state.data.routes.filter(r => shouldList(state.data.routes, r))};
 }
 
 export default connect(mapStateToProps)(RouteLists);
