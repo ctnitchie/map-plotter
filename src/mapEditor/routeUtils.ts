@@ -1,6 +1,13 @@
 import { RouteData, Point, Bounds } from '../MapPlot';
 
 /**
+ * We'll put a table on the array for speedier lookups.
+ */
+interface Lookup {
+  table: {[key: string]: RouteData}
+}
+
+/**
  * Gets the route ID when you don't know whether you have a route or a route ID.
  * @param r The route or the ID.
  */
@@ -16,15 +23,13 @@ export function find(arr: RouteData[], id: RouteData | string): RouteData {
   if ((id as RouteData).heading !== undefined) {
     return id as RouteData;
   }
-  return arr.find(r => r.id === id);
-}
 
-export function indexOf(arr: RouteData[], r: RouteData | string): number {
-  const id = getId(r);
-  if (!id) {
-    return -1;
+  let lookup = arr as unknown as Lookup;
+  if (!lookup.table) {
+    lookup.table = {};
+    arr.forEach(r => lookup.table[r.id] = r);
   }
-  return arr.findIndex(rt => rt.id === id);
+  return lookup.table[id as string];
 }
 
 export function isDescendant(arr: RouteData[], child: RouteData, parent: RouteData | string): boolean {
