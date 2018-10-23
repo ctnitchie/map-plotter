@@ -63,6 +63,14 @@ export function startPoint(arr: RouteData[], r: RouteData): Point {
   return prev ? endPoint(arr, prev) : {x: 0, y: 0};
 }
 
+export function normalizeHeading(heading: number): number {
+  if (heading === undefined) return 0;
+  let h = heading;
+  while (h < 0) h += 360;
+  while (h >= 360) h -= 360;
+  return h;
+}
+
 export function endPoint(arr: RouteData[], r: RouteData): Point {
   const heading = r.heading === null ? 0 : r.heading;
   const distance = r.distance === null ? 0 : r.distance;

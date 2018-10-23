@@ -3,7 +3,7 @@ import { RouteData, LineType, MapData, DFLT_ROUTE_OPTS, nextId } from '../MapPlo
 import { RouteListener } from './MapEditor';
 import { Dispatch } from 'redux';
 import { State } from './reducers';
-import { isDescendant, isDescendantOrSelf, getEndLabel } from './routeUtils';
+import { isDescendant, isDescendantOrSelf, getEndLabel, normalizeHeading } from './routeUtils';
 
 interface LineTypeSelectorProps {
   type: LineType
@@ -44,8 +44,9 @@ export default function RouteEditor({route, index, listener, map: {startLabel, r
     listener.onUpdate(newRoute, index);
   }
 
-  function updateRoute(e: React.ChangeEvent<HTMLInputElement>, prop: string, num: boolean = false) {
+  function updateRoute(e: React.ChangeEvent<HTMLInputElement>, prop: string, num: boolean = false, fixFn = (x:any) => x) {
     let v = num ? parseInt(e.target.value) : e.target.value;
+    v = fixFn(v);
     if (num && isNaN(v as number)) v = null;
     listener.onUpdate({...route, [prop]: v}, index);
   }
@@ -101,8 +102,8 @@ export default function RouteEditor({route, index, listener, map: {startLabel, r
           </div>
           <div className="col-6 d-flex">
             <div className="flex-grow-1">
-              <input type="number" style={{width: '100%'}} min="0" max="359"
-                  onChange={e => updateRoute(e, 'heading', true)} value={route.heading}/>
+              <input type="number" style={{width: '100%'}}
+                  onChange={e => updateRoute(e, 'heading', true, normalizeHeading)} value={route.heading}/>
             </div>
             <span>°</span>
             <div className="flex-shrink-1">
