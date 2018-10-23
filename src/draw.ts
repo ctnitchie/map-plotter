@@ -105,6 +105,8 @@ export default function draw(plot: MapData, canvas: HTMLCanvasElement) {
   const cxt = canvas.getContext('2d');
   cxt.clearRect(0, 0, canvas.width, canvas.height);
   canvas.parentElement.style.backgroundColor = plot.style.background;
+
+  dot(plot, cxt, adjust.point({x: 0, y: 0, label: plot.startLabel}), true);
   
   const lines = plot.routes.map(adjust.line);
   lines.filter(l => l.opts.type !== LineType.NONE).forEach(l => {
