@@ -53,8 +53,16 @@ function mapStateToProps(state: State): State {
 
 function mapDispatchToProps(dispatch: Dispatch): MapListener {
   return {
-    onClear: () => dispatch(clear()),
-    onReset: () => dispatch(reset()),
+    onClear: () => {
+      if (confirm(`Are you sure you want to clear the map and start from scratch?`)) {
+        dispatch(clear())
+      }
+    },
+    onReset: () => {
+      if (confirm(`Are you sure you want to reset the map to its original state?`)) {
+        dispatch(reset())
+      }
+    },
     onStartLabelChange: (s: string) => dispatch(setStartLabel(s)),
     routeListener: {
       onAdd: (route, index) => dispatch(addRoute({route, index})),

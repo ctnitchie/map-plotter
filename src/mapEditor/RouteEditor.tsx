@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { RouteData, LineType, MapData } from '../MapPlot';
+import { RouteData, LineType, MapData, DFLT_ROUTE_OPTS, nextId } from '../MapPlot';
 import { RouteListener } from './MapEditor';
 import { Dispatch } from 'redux';
 import { State } from './reducers';
@@ -56,7 +56,14 @@ export default function RouteEditor({route, index, listener, map: {startLabel, r
   }
 
   function addRoute() {
-    listener.onAdd({previousId: route.id, heading: 0, distance: 0, endLabel: ''}, index + 1);
+    listener.onAdd({
+      id: nextId(),
+      previousId: route.id,
+      heading: 0,
+      distance: 0,
+      endLabel: '',
+      opts: DFLT_ROUTE_OPTS
+    }, index + 1);
   }
 
   function removeRoute() {

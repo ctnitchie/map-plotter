@@ -61,22 +61,12 @@ export interface LineOpts {
   highlighted?: boolean
 }
 
-export const DFLT_LINE_OPTS: LineOpts = {
+export const DFLT_ROUTE_OPTS: LineOpts = {
   label: true,
   type: LineType.SOLID,
   makeDot: true,
   labelDot: true,
   highlighted: false
-};
-
-export const DFLT_ROUTE_OPTS: LineOpts = {
-  ...DFLT_LINE_OPTS,
-  label: false
-};
-
-export const DFLT_JOIN_OPTS: LineOpts = {
-  ...DFLT_LINE_OPTS,
-  labelDot: false
 };
 
 export const DFLT_STYLE: StyleOptions = {
@@ -110,8 +100,8 @@ export interface RouteData {
   heading: number,
   distance: number,
   endLabel?: string,
-  opts?: LineOpts,
-  id?: RouteId
+  opts: LineOpts,
+  id: RouteId
 }
 
 export class Route implements PlotLine {

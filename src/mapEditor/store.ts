@@ -1,5 +1,7 @@
 import { createStore } from 'redux';
-import reducer from './reducers';
+import reducer, { State } from './reducers';
 import plotFn from '../routes/adjusted2';
 
-export const store = createStore(reducer, {data: plotFn().getData()});
+export const initialMap = plotFn().getData();
+
+export const store = createStore(reducer, {data: initialMap});
