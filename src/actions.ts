@@ -1,4 +1,4 @@
-import { RouteData, StyleOptions } from '../Types';
+import { RouteData, StyleOptions } from './Types';
 import { makePActionFactory, makeActionFactory } from './actionlib';
 
 export interface IndexedRoutePayload {

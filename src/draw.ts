@@ -1,5 +1,5 @@
 import { Point, LineOpts, LineType, MapData, RouteData} from './Types';
-import { getBounds, startPoint, endPoint, getLineLabel } from './mapEditor/routeUtils';
+import { getBounds, startPoint, endPoint, getLineLabel } from './routeUtils';
 
 function getDistance(p1: Point, p2: Point): number {
   const b = p2.x - p1.x;

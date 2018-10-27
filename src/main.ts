@@ -1,1 +1,1 @@
-import './mapEditor/MainUI';
+import './MainUI';

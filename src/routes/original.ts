@@ -1,5 +1,5 @@
 import { RouteData } from '../Types';
-import { addRoute } from '../mapEditor/routeUtils';
+import { addRoute } from '../routeUtils';
 
 const routes: RouteData[] = [];
 const baseLine = 250;

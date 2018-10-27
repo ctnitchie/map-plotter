@@ -1,5 +1,5 @@
 import { LineType, RouteData, MapData, DFLT_STYLE } from "../Types";
-import { addRoute } from '../mapEditor/routeUtils';
+import { addRoute } from '../routeUtils';
 
 export default function(): MapData {
   const map: MapData = {
