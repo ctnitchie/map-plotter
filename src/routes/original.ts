@@ -1,28 +1,29 @@
-import { MapPlot } from "../MapPlot";
+import { RouteData } from '../MapPlot';
+import { addRoute } from '../mapEditor/routeUtils';
 
-const plot = new MapPlot();
+const routes: RouteData[] = [];
 const baseLine = 250;
 const eastLine = 110;
 const westLine = 35;
 
-const brynne = plot.addRoute(null, baseLine, 134, 'HMCS Brynne');
-const dino = plot.addRoute(brynne, 0, 85, 'Scubasaurus');
-const buddha = plot.addRoute(dino, 330, 51, 'Buddha');
-const david = plot.addRoute(buddha, eastLine, 70, 'David');
-const soldier = plot.addRoute(david, eastLine, 58, 'Soldier');
-const platformReturn = plot.addRoute(soldier, eastLine, 46, 'Platform (from Buddah)');
-const lady = plot.addRoute(platformReturn, 325, 19, 'Lady');
-const tub = plot.addRoute(lady, 0, 63, 'Tub');
+const brynne = addRoute(routes, null, baseLine, 134, 'HMCS Brynne');
+const dino = addRoute(routes, brynne, 0, 85, 'Scubasaurus');
+const buddha = addRoute(routes, dino, 330, 51, 'Buddha');
+const david = addRoute(routes, buddha, eastLine, 70, 'David');
+const soldier = addRoute(routes, david, eastLine, 58, 'Soldier');
+const platformReturn = addRoute(routes, soldier, eastLine, 46, 'Platform (from Buddah)');
+const lady = addRoute(routes, platformReturn, 325, 19, 'Lady');
+const tub = addRoute(routes, lady, 0, 63, 'Tub');
 
-const pvcPipe = plot.addRoute(brynne, baseLine, 75, 'PVC Pipe');
-const westPlatform = plot.addRoute(pvcPipe, baseLine, 67, 'West Platform');
-const westPlatformWest = plot.addRoute(westPlatform, 270, 10);
-const hoop = plot.addRoute(westPlatformWest, 315, 64, 'Hoop');
-const trash = plot.addRoute(hoop, 315, 50, 'Trash');
-const hoop2 = plot.addRoute(westPlatformWest, 335, 21, 'Hoop');
-const end = plot.addRoute(hoop2, 335, 113, 'End of the Line');
-const gocart = plot.addRoute(westPlatform, westLine, 56, 'Cart');
-const hoop3 = plot.addRoute(gocart, westLine, 19, 'Hoop');
-const buddah2 = plot.addRoute(hoop3, westLine, 150, 'Buddah (from West Platform)');
+const pvcPipe = addRoute(routes, brynne, baseLine, 75, 'PVC Pipe');
+const westPlatform = addRoute(routes, pvcPipe, baseLine, 67, 'West Platform');
+const westPlatformWest = addRoute(routes, westPlatform, 270, 10);
+const hoop = addRoute(routes, westPlatformWest, 315, 64, 'Hoop');
+const trash = addRoute(routes, hoop, 315, 50, 'Trash');
+const hoop2 = addRoute(routes, westPlatformWest, 335, 21, 'Hoop');
+const end = addRoute(routes, hoop2, 335, 113, 'End of the Line');
+const gocart = addRoute(routes, westPlatform, westLine, 56, 'Cart');
+const hoop3 = addRoute(routes, gocart, westLine, 19, 'Hoop');
+const buddah2 = addRoute(routes, hoop3, westLine, 150, 'Buddah (from West Platform)');
 
-export default plot;
+export default routes;

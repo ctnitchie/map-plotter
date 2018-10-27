@@ -1,4 +1,4 @@
-import { RouteData, Point, Bounds } from '../MapPlot';
+import { RouteData, Point, Bounds, LineOpts, DFLT_ROUTE_OPTS, nextId } from '../MapPlot';
 
 /**
  * We'll put a table on the array for speedier lookups.
@@ -155,4 +155,18 @@ export function getBounds(routes: RouteData[]): Bounds {
     width: maxX - minX,
     height: maxY - minY
   };
+}
+
+export function addRoute(arr: RouteData[], previous: RouteData, heading: number, distance: number,
+    endLabel: string = undefined, opts: LineOpts = {}): RouteData {
+  const route: RouteData = {
+    id: nextId(),
+    previousId: previous ? previous.id : null,
+    heading,
+    distance,
+    endLabel,
+    opts: {...DFLT_ROUTE_OPTS, ...opts}
+  };
+  arr.push(route);
+  return route;
 }
