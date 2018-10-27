@@ -2,7 +2,7 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 
-import {store} from './store';
+import {store} from '../store';
 import { ConnectedEditControls } from './MapEditor';
 import { ConnectedRenderedMap } from './CanvasRenderer';
 import RouteLists from './RouteLists';

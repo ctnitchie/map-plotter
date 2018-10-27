@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { RouteData, MapData, LineType } from './types';
-import { getStartLabel, getEndLabel, previous } from './routeUtils';
-import { State } from './reducers';
+import { RouteData, MapData, LineType } from '../types';
+import { getStartLabel, getEndLabel, previous } from '../routeUtils';
+import { State } from '../reducers';
 import { connect } from 'react-redux';
 
 export interface RouteListsProps {
