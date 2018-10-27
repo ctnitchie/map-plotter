@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { RouteData, MapData, LineType } from '../MapPlot';
+import { RouteData, MapData, LineType } from '../Types';
 import { getStartLabel, getEndLabel, previous } from './routeUtils';
 import { State } from './reducers';
 import { connect } from 'react-redux';

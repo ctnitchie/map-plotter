@@ -1,4 +1,4 @@
-import { RouteData, StyleOptions } from '../MapPlot';
+import { RouteData, StyleOptions } from '../Types';
 import { makePActionFactory, makeActionFactory } from './actionlib';
 
 export interface IndexedRoutePayload {

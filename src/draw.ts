@@ -1,4 +1,4 @@
-import { Point, LineOpts, LineType, MapData, RouteData} from './MapPlot';
+import { Point, LineOpts, LineType, MapData, RouteData} from './Types';
 import { getBounds, startPoint, endPoint, getLineLabel } from './mapEditor/routeUtils';
 
 function getDistance(p1: Point, p2: Point): number {

@@ -1,4 +1,4 @@
-import { LineType, RouteData, MapData, DFLT_STYLE } from "../MapPlot";
+import { LineType, RouteData, MapData, DFLT_STYLE } from "../Types";
 import { addRoute } from '../mapEditor/routeUtils';
 
 export default function(): MapData {

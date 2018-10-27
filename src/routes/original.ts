@@ -1,4 +1,4 @@
-import { RouteData } from '../MapPlot';
+import { RouteData } from '../Types';
 import { addRoute } from '../mapEditor/routeUtils';
 
 const routes: RouteData[] = [];

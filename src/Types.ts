@@ -1,5 +1,3 @@
-import draw from './draw';
-
 export type RouteId = string;
 
 export const nextId: () => RouteId = (function() {
