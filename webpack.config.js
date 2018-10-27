@@ -45,7 +45,7 @@ module.exports = {
     extensions: ['.js', '.jsx', '.ts', '.tsx', '.scss']
   },
 
-  entry: './src/main.ts',
+  entry: './src/MainUI.tsx',
 
   output: {
     filename: '[name].js',
