@@ -4,7 +4,7 @@ import {Dispatch} from 'redux';
 import {connect} from 'react-redux';
 
 import RouteEditor from './RouteEditor';
-import { RouteData } from './Types';
+import { RouteData } from './types';
 
 import { State } from './reducers';
 import { clear, reset, setStartLabel, addRoute, removeRoute, updateRoute } from './actions';

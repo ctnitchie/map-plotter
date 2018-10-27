@@ -1,5 +1,5 @@
 import * as a from './actions';
-import { EMPTY_PLOT, MapData, RouteData, StyleOptions, nextId, DFLT_ROUTE_OPTS, DFLT_STYLE } from './Types';
+import { EMPTY_PLOT, MapData, RouteData, StyleOptions, nextId, DFLT_ROUTE_OPTS, DFLT_STYLE } from './types';
 import { Action, PayloadAction } from './actionlib';
 import {combineReducers, Reducer} from 'redux';
 import { removeWithDescendants } from './routeUtils';

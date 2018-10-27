@@ -1,4 +1,4 @@
-import { LineType, RouteData, MapData, DFLT_STYLE } from "../Types";
+import { LineType, RouteData, MapData, DFLT_STYLE } from "../types";
 import { addRoute } from '../routeUtils';
 
 export default function(): MapData {

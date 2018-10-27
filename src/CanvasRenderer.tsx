@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { MapData } from './Types';
+import { MapData } from './types';
 import draw from './draw';
 import { State } from './reducers';
 import { connect } from 'react-redux';

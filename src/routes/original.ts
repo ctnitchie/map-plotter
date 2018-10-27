@@ -1,4 +1,4 @@
-import { RouteData } from '../Types';
+import { RouteData } from '../types';
 import { addRoute } from '../routeUtils';
 
 const routes: RouteData[] = [];

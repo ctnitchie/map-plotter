@@ -1,4 +1,4 @@
-import { RouteData, Point, Bounds, LineOpts, DFLT_ROUTE_OPTS, nextId } from './Types';
+import { RouteData, Point, Bounds, LineOpts, DFLT_ROUTE_OPTS, nextId } from './types';
 
 /**
  * We'll put a table on the array for speedier lookups.

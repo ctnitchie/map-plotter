@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { RouteData, LineType, MapData, DFLT_ROUTE_OPTS, nextId } from './Types';
+import { RouteData, LineType, MapData, DFLT_ROUTE_OPTS, nextId } from './types';
 import { RouteListener } from './MapEditor';
 import { Dispatch } from 'redux';
 import { State } from './reducers';

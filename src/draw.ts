@@ -1,4 +1,4 @@
-import { Point, LineOpts, LineType, MapData, RouteData} from './Types';
+import { Point, LineOpts, LineType, MapData, RouteData} from './types';
 import { getBounds, startPoint, endPoint, getLineLabel } from './routeUtils';
 
 function getDistance(p1: Point, p2: Point): number {
