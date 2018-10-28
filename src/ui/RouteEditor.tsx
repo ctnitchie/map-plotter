@@ -4,6 +4,7 @@ import { RouteListener } from './MapEditor';
 import { Dispatch } from 'redux';
 import { State } from '../reducers';
 import { isDescendant, isDescendantOrSelf, getEndLabel, normalizeHeading } from '../routeUtils';
+import { BButton } from './BootstrapComponents';
 
 interface LineTypeSelectorProps {
   type: LineType
@@ -134,8 +135,8 @@ export default function RouteEditor({route, index, listener, map: {startLabel, r
                 disabled={!route.opts.makeDot}/> Label Dot
           </div>
           <div className="col-4 text-right">
-            <button className="btn btn-sm btn-success" onClick={addRoute}>Add</button>
-            <button className="btn btn-sm btn-danger" onClick={removeRoute}>Delete</button>
+            <BButton style="success" size="sm" onClick={addRoute}>Add</BButton>
+            <BButton style="danger" size="sm" onClick={removeRoute}>Delete</BButton>
           </div>
         </div>
       </div>

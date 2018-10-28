@@ -8,6 +8,7 @@ import { RouteData } from '../types';
 
 import { State } from '../reducers';
 import { clear, reset, setStartLabel, addRoute, removeRoute, updateRoute } from '../actions';
+import { BButton } from './BootstrapComponents';
 
 export interface RouteListener {
   onAdd: (route: RouteData, index: number) => void;
@@ -28,11 +29,9 @@ export function EditControls(props: EditControlsProps) {
   return (
     <div id="plotEditor">
       <div className="buttons">
-        <button className="btn btn-sm btn-danger" onClick={props.onClear}>New Map</button>
+        <BButton style="danger" size="sm" onClick={props.onClear}>New Map</BButton>
         {' '}
-        <button className="btn btn-sm btn-secondary" onClick={props.onReset}>
-          Reset
-        </button>
+        <BButton style="secondary" size="sm" onClick={props.onReset}>Reset</BButton>
       </div>
       <div className="mainControls">
         <b>Entry Point Name: </b>
