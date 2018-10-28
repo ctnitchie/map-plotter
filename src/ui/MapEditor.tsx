@@ -28,11 +28,6 @@ interface EditControlsProps extends State, MapListener {}
 export function EditControls(props: EditControlsProps) {
   return (
     <div id="plotEditor">
-      <div className="buttons">
-        <BButton style="danger" size="sm" onClick={props.onClear}>New Map</BButton>
-        {' '}
-        <BButton style="secondary" size="sm" onClick={props.onReset}>Reset</BButton>
-      </div>
       <div className="mainControls">
         <b>Entry Point Name: </b>
         <input type="text" value={props.data.startLabel} onChange={e => props.onStartLabelChange(e.target.value)}/>

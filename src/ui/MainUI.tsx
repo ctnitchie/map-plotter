@@ -6,16 +6,22 @@ import {store} from '../store';
 import { ConnectedEditControls } from './MapEditor';
 import { ConnectedRenderedMap } from './CanvasRenderer';
 import RouteLists from './RouteLists';
+import { Toolbar } from './Toolbar';
 
 function MainUI() {
   return (
-  <Provider store={store}>
-    <div className="container-fluid">
-      <div className="row">
-        <div className="col-12">
-          <h1>Map Plot Editor</h1>
+    <Provider store={store}>
+      <div className="container-fluid">
+        <div className="row">
+          <div className="col-12">
+            <h1>Map Plot Editor</h1>
+          </div>
         </div>
-      </div>
+        <div className="row">
+          <div className="col-12">
+            <Toolbar/>
+          </div>
+        </div>
         <div className="row">
           <div className="col-12 col-sm-7">
             <div>
