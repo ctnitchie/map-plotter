@@ -6,7 +6,7 @@ const babelOpts = {
     '@babel/plugin-proposal-object-rest-spread'
   ],
   presets: [
-    ['@babel/preset-env', {modules: false}],
+    ['@babel/preset-env', {modules: false, targets: {node: 'current'}}],
     ['@babel/preset-react']
   ]
 };
