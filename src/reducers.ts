@@ -3,7 +3,7 @@ import { EMPTY_PLOT, MapData, RouteData, StyleOptions, nextId, DFLT_ROUTE_OPTS, 
 import { Action, PayloadAction } from './actionlib';
 import {combineReducers, Reducer} from 'redux';
 import { removeWithDescendants } from './routeUtils';
-import { initialMap, store } from './store';
+import { initialMap } from './store';
 
 export interface UIState {}
 

@@ -8,7 +8,6 @@ import { RouteData } from '../types';
 
 import { State } from '../reducers';
 import { clear, reset, setStartLabel, addRoute, removeRoute, updateRoute } from '../actions';
-import { BButton } from './BootstrapComponents';
 
 export interface RouteListener {
   onAdd: (route: RouteData, index: number) => void;

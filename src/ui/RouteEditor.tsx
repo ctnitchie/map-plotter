@@ -1,9 +1,7 @@
 import * as React from 'react';
 import { RouteData, LineType, MapData, DFLT_ROUTE_OPTS, nextId } from '../types';
 import { RouteListener } from './MapEditor';
-import { Dispatch } from 'redux';
-import { State } from '../reducers';
-import { isDescendant, isDescendantOrSelf, getEndLabel, normalizeHeading } from '../routeUtils';
+import { isDescendantOrSelf, getEndLabel, normalizeHeading } from '../routeUtils';
 import { BButton } from './BootstrapComponents';
 
 interface LineTypeSelectorProps {
@@ -23,9 +21,6 @@ function LineTypeSelector(props: LineTypeSelectorProps) {
     </select>
   );
 }
-
-
-
 
 interface RouteEditorProps {
   map: MapData,
