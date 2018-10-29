@@ -15,37 +15,37 @@ interface TypeMeta<T extends string> {
   getType: () => T;
 }
 type ActionFactory<T extends string> = (() => Action<T>) & TypeMeta<T>;
-type ActionFactory2<T extends string> = () => ActionFactory<T>;
+type ActionFactoryBuilder<T extends string> = () => ActionFactory<T>;
 type PayloadActionFactory<T extends string, P> = ((payload: P) => PayloadAction<T, P>) & TypeMeta<T>;
-type PayloadActionFactory2<T extends string> = <P>() => PayloadActionFactory<T, P>;
+type PayloadActionFactoryBuilder<T extends string> = <P>() => PayloadActionFactory<T, P>;
 type AsyncActionFactory<T extends string> = (() => AsyncActionHandler) & TypeMeta<T>;
-type AsyncActionFactory2<T extends string> = (handler: AsyncActionHandler) => AsyncActionFactory<T>;
+type AsyncActionFactoryBuilder<T extends string> = (handler: AsyncActionHandler) => AsyncActionFactory<T>;
 
-export function makeActionFactory<T extends string>(type: T): ActionFactory2<T> {
-  const fn2: ActionFactory2<T> = (): ActionFactory<T> => {
+export function makeActionFactory<T extends string>(type: T): ActionFactoryBuilder<T> {
+  const builder: ActionFactoryBuilder<T> = (): ActionFactory<T> => {
     return Object.assign(() => {return {type};}, {getType: () => type});
   };
-  return fn2;
+  return builder;
 }
 
-export function makePActionFactory<T extends string>(type: T): PayloadActionFactory2<T> {
-  const fn2 = <P>() => {
-    const fn = (payload: P) => {
+export function makePActionFactory<T extends string>(type: T): PayloadActionFactoryBuilder<T> {
+  const builder = <P>() => {
+    const actionFactory = (payload: P) => {
       return {type, payload};
     }
-    fn.getType = () => type;
-    return fn;
+    actionFactory.getType = () => type;
+    return actionFactory;
   }
-  return fn2;
+  return builder;
 }
 
-export function makeAsyncActionFactory<T extends string>(type: T): AsyncActionFactory2<T> {
-  const fn2 = (handler: AsyncActionHandler): any => {
-    const fn = () => {
+export function makeAsyncActionFactory<T extends string>(type: T): AsyncActionFactoryBuilder<T> {
+  const builder = (handler: AsyncActionHandler): any => {
+    const actionFactory = () => {
       return handler;
     };
-    fn.getType = () => type;
-    return fn;
+    actionFactory.getType = () => type;
+    return actionFactory;
   }
-  return fn2;
+  return builder;
 }
