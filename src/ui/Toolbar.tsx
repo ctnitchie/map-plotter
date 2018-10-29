@@ -7,7 +7,7 @@ import { State } from '../reducers';
 import { BButtonProps, BButtonGroup, BButton } from './BootstrapComponents';
 
 function connectButton(a: ActionCreator<any>, stateHandler?: (state: State, ownProps: BButtonProps) => BButtonProps) {
-  const stateToProps = stateHandler || ((state: State, ownProps: BButtonProps) => {});
+  const stateToProps = stateHandler || (() => {return {};});
   const dispatchToProps = (dispatch: Dispatch) => {
     return {
       onClick: () => dispatch(a())

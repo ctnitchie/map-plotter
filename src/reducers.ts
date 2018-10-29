@@ -39,18 +39,8 @@ export default combineReducers({
           return action.payload;
         case a.clear.getType():
           return 'Origin';
-        case a.tryClear.getType():
-          if (confirm('This will discard the current map. Are you sure?')) {
-            setTimeout(() => store.dispatch(a.clear()), 1);
-          }
-          return;
         case a.reset.getType():
           return initialMap.startLabel;
-        case a.tryReset.getType():
-          if (confirm('Are you sure you want to reset the map to its original state? Any changes will be lost.')) {
-            setTimeout(() => store.dispatch(a.reset()), 1);
-          }
-          return;
       }
       return state;
     },

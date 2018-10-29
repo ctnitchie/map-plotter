@@ -1,5 +1,5 @@
 import { RouteData, StyleOptions } from './types';
-import { makePActionFactory, makeActionFactory } from './actionlib';
+import { makePActionFactory, makeActionFactory, makeAsyncActionFactory } from './actionlib';
 
 export interface IndexedRoutePayload {
   route: RouteData,
@@ -12,7 +12,17 @@ export const removeRoute = makePActionFactory('REMOVE_ROUTE')<IndexedRoutePayloa
 export const updateRoute = makePActionFactory('UPDATE_ROUTE')<IndexedRoutePayload>();
 export const setStartLabel = makePActionFactory('SET_START_LABEL')<string>();
 export const updateStyle = makePActionFactory('UPDATE_STYLE')<StyleOptions>();
-export const tryClear = makeActionFactory('TRY_CLEAR')();
 export const clear = makeActionFactory('CLEAR')();
-export const tryReset = makeActionFactory('TRY_RESET')();
 export const reset = makeActionFactory('RESET')();
+
+export const tryReset = makeAsyncActionFactory('TRY_RESET')(dispatch => {
+  if (confirm('Are you sure you want to reset the map to its original state? Any changes will be lost.')) {
+    dispatch(reset());
+  }
+});
+
+export const tryClear = makeAsyncActionFactory('TRY_CLEAR')(dispatch => {
+  if (confirm('This will discard the current map. Are you sure?')) {
+    dispatch(clear());
+  }
+});
