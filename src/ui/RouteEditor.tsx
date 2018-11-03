@@ -3,6 +3,8 @@ import { RouteData, LineType, MapData, DFLT_ROUTE_OPTS, nextId } from '../types'
 import { RouteListener } from './MapEditor';
 import { isDescendantOrSelf, getEndLabel, normalizeHeading } from '../routeUtils';
 import { BButton } from './BootstrapComponents';
+import { faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faTrashAlt } from '@fortawesome/free-regular-svg-icons';
 
 interface LineTypeSelectorProps {
   type: LineType
@@ -130,8 +132,8 @@ export default function RouteEditor({route, index, listener, map: {startLabel, r
                 disabled={!route.opts.makeDot}/> Label Dot
           </div>
           <div className="col-4 text-right">
-            <BButton style="success" size="sm" onClick={addRoute}>Add</BButton>
-            <BButton style="danger" size="sm" onClick={removeRoute}>Delete</BButton>
+            <BButton style="success" size="sm" icon={faPlus} onClick={addRoute}>Add</BButton>
+            <BButton style="danger" size="sm" icon={faTrashAlt} onClick={removeRoute}>Delete</BButton>
           </div>
         </div>
       </div>
