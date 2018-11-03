@@ -1,6 +1,15 @@
+$grid-gutter-width: 20px;
+
 @import '../../node_modules/bootstrap/scss/bootstrap';
 
 $mainHeight: 600px;
+
+#toolbar {
+  border: solid 1px #444;
+  background-color: #ddc;
+  padding: 4px;
+  margin-bottom: 5px;
+}
 
 #canvasWrapper {
   border: solid 1px black;
@@ -12,11 +21,12 @@ $mainHeight: 600px;
   height: $mainHeight;
 }
 
-#editor {
+#plotEditor {
   font-size: .8rem;
   max-height: $mainHeight;
   overflow: auto;
   border: solid 1px black;
+  padding: 5px;
 
   .card.highlighted {
     background-color: #ffc;
