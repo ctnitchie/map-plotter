@@ -4,6 +4,8 @@ import { ActionCreator, Dispatch } from 'redux';
 import { connect } from 'react-redux';
 import { State } from '../reducers';
 import { BButtonProps, BButtonGroup, BButton } from './BootstrapComponents';
+import { faFile } from '@fortawesome/free-regular-svg-icons';
+import { faUndo } from '@fortawesome/free-solid-svg-icons';
 
 function connectButton(a: ActionCreator<any>, stateHandler?: (state: State, ownProps: BButtonProps) => BButtonProps) {
   const dispatchToProps = (dispatch: Dispatch) => {
@@ -21,8 +23,8 @@ export function Toolbar() {
   return (
     <div className="btn-toolbar" id="toolbar">
       <BButtonGroup>
-        <NewButton style="danger" size="sm">New Map</NewButton>
-        <ResetButton style="secondary" size="sm">Reset</ResetButton>
+        <NewButton style="success" size="sm" icon={faFile} title="New Map"/>
+        <ResetButton style="danger" size="sm" icon={faUndo} title="Reset Map"/>
       </BButtonGroup>
     </div>
   );

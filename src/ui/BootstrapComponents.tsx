@@ -1,4 +1,6 @@
 import * as React from 'react';
+import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 export type ComponentStyle = 'primary' | 'secondary' | 'success' | 'danger' | 'warning' | 'info' | 'light' | 'dark';
 export type ComponentSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
@@ -16,6 +18,7 @@ export interface BButtonProps {
   className?: string;
   children?: React.ReactNode;
   title?: string;
+  icon?: IconDefinition;
 }
 
 export function BButton(props: BButtonProps) {
@@ -23,6 +26,8 @@ export function BButton(props: BButtonProps) {
   return (
     <button className={c(['btn', `btn-${styleToken}`, `btn-${props.size}`, props.className])}
         onClick={props.onClick} disabled={props.disabled} title={props.title}>
+      {props.icon && <FontAwesomeIcon icon={props.icon}/>}
+      {(props.icon && props.children) && ' '}
       {props.children}
     </button>
   )
