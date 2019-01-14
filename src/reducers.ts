@@ -5,7 +5,9 @@ import {combineReducers, Reducer} from 'redux';
 import { removeWithDescendants } from './routeUtils';
 import { initialMap } from './store';
 
-export interface UIState {}
+export interface UIState {
+  dialog: 'save' | null
+}
 
 export interface State {
   readonly data: MapData,
@@ -78,7 +80,7 @@ export default combineReducers({
       return state;
     }
   }),
-  uistate: (state: UIState = {}, action: Action) => {
+  uistate: (state: UIState = {dialog: null}, action: Action) => {
     return {state};
   }
 });

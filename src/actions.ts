@@ -14,6 +14,8 @@ export const setStartLabel = makePActionFactory('SET_START_LABEL')<string>();
 export const updateStyle = makePActionFactory('UPDATE_STYLE')<StyleOptions>();
 export const clear = makeActionFactory('CLEAR')();
 export const reset = makeActionFactory('RESET')();
+export const initDialog = makePActionFactory('INIT_DIALOG')<string>();
+export const dismissDialog = makePActionFactory('DISMISS_DIALOG')<string>();
 
 export const tryReset = makeAsyncActionFactory('TRY_RESET')(dispatch => {
   if (confirm('Are you sure you want to reset the map to its original state? Any changes will be lost.')) {

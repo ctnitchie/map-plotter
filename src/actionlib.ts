@@ -14,10 +14,13 @@ export type AsyncActionHandler = ThunkAction<any, State, any, Action>;
 interface TypeMeta<T extends string> {
   getType: () => T;
 }
-type ActionFactory<T extends string> = (() => Action<T>) & TypeMeta<T>;
+
+export type ActionFactory<T extends string> = (() => Action<T>) & TypeMeta<T>;
 type ActionFactoryBuilder<T extends string> = () => ActionFactory<T>;
+
 type PayloadActionFactory<T extends string, P> = ((payload: P) => PayloadAction<T, P>) & TypeMeta<T>;
 type PayloadActionFactoryBuilder<T extends string> = <P>() => PayloadActionFactory<T, P>;
+
 type AsyncActionFactory<T extends string> = (() => AsyncActionHandler) & TypeMeta<T>;
 type AsyncActionFactoryBuilder<T extends string> = (handler: AsyncActionHandler) => AsyncActionFactory<T>;
 
